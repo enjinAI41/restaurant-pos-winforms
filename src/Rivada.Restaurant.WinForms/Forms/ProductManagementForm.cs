@@ -52,17 +52,17 @@ namespace Rivada.Restaurant.WinForms.Forms
                 ? _loggedInUser.Username
                 : _loggedInUser.FullName;
 
-            lblUser.Text = $"User: {fullName}";
+            lblUser.Text = $"Kullanici: {fullName}";
         }
 
         private void ConfigureGrid()
         {
             dgvProducts.Columns.Clear();
             dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colId", HeaderText = "Id", Visible = false });
-            dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colName", HeaderText = "Product Name", FillWeight = 200 });
-            dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colCategory", HeaderText = "Category", FillWeight = 140 });
-            dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colPrice", HeaderText = "Price", FillWeight = 90 });
-            dgvProducts.Columns.Add(new DataGridViewCheckBoxColumn { Name = "colIsActive", HeaderText = "IsActive", FillWeight = 70 });
+            dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colName", HeaderText = "Urun Adi", FillWeight = 200 });
+            dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colCategory", HeaderText = "Kategori", FillWeight = 140 });
+            dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colPrice", HeaderText = "Fiyat", FillWeight = 90 });
+            dgvProducts.Columns.Add(new DataGridViewCheckBoxColumn { Name = "colIsActive", HeaderText = "Aktif", FillWeight = 70 });
             dgvProducts.Columns.Add(new DataGridViewTextBoxColumn { Name = "colCategoryId", HeaderText = "CategoryId", Visible = false });
         }
 
@@ -86,8 +86,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not load categories.\n\n{ex.Message}",
-                    "Error",
+                    $"Kategoriler yuklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -108,8 +108,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not load products.\n\n{ex.Message}",
-                    "Error",
+                    $"Urunler yuklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -151,7 +151,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 }
 
                 await Task.Run(() => _productManagementService.AddProduct(name, categoryId, price, isActive));
-                MessageBox.Show("Product added successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Urun basariyla eklendi.", "Basarili", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 await LoadProductsAsync();
                 ClearForm();
@@ -159,8 +159,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not add product.\n\n{ex.Message}",
-                    "Error",
+                    $"Urun eklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -182,7 +182,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 _isBusy = true;
                 if (_selectedProductId <= 0)
                 {
-                    MessageBox.Show("Select a product to update.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Guncellemek icin bir urun secin.", "Dogrulama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -192,7 +192,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 }
 
                 await Task.Run(() => _productManagementService.UpdateProduct(_selectedProductId, name, categoryId, price, isActive));
-                MessageBox.Show("Product updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Urun basariyla guncellendi.", "Basarili", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 await LoadProductsAsync();
                 ClearForm();
@@ -200,8 +200,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not update product.\n\n{ex.Message}",
-                    "Error",
+                    $"Urun guncellenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -225,13 +225,13 @@ namespace Rivada.Restaurant.WinForms.Forms
 
             if (_selectedProductId <= 0)
             {
-                MessageBox.Show("Select a product first.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Once bir urun secin.", "Dogrulama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             var confirm = MessageBox.Show(
-                "Mark selected product as inactive?",
-                "Confirm",
+                "Secili urun pasif yapilsin mi?",
+                "Onay",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
@@ -244,7 +244,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             {
                 _isBusy = true;
                 await Task.Run(() => _productManagementService.MarkProductInactive(_selectedProductId));
-                MessageBox.Show("Product marked inactive.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Urun pasif olarak isaretlendi.", "Basarili", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 await LoadProductsAsync();
                 ClearForm();
@@ -252,8 +252,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not mark product inactive.\n\n{ex.Message}",
-                    "Error",
+                    $"Urun pasif isaretlenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -272,13 +272,13 @@ namespace Rivada.Restaurant.WinForms.Forms
 
             if (_selectedProductId <= 0)
             {
-                MessageBox.Show("Select a product first.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Once bir urun secin.", "Dogrulama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             var confirm = MessageBox.Show(
-                "Delete selected product permanently?",
-                "Confirm Delete",
+                "Secili urun kalici olarak silinsin mi?",
+                "Silme Onayi",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
 
@@ -291,7 +291,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             {
                 _isBusy = true;
                 await Task.Run(() => _productManagementService.DeleteProduct(_selectedProductId));
-                MessageBox.Show("Product deleted.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Urun silindi.", "Basarili", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 await LoadProductsAsync();
                 ClearForm();
@@ -299,8 +299,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not delete product.\n\n{ex.Message}",
-                    "Error",
+                    $"Urun silinemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -360,14 +360,14 @@ namespace Rivada.Restaurant.WinForms.Forms
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                MessageBox.Show("Product name is required.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Urun adi zorunludur.", "Dogrulama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtProductName.Focus();
                 return false;
             }
 
             if (cmbCategory.SelectedValue is not int selectedCategoryId || selectedCategoryId <= 0)
             {
-                MessageBox.Show("Please select a category.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Lutfen bir kategori secin.", "Dogrulama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cmbCategory.Focus();
                 return false;
             }
@@ -376,14 +376,14 @@ namespace Rivada.Restaurant.WinForms.Forms
             if (!decimal.TryParse(normalizedPriceText, NumberStyles.Number, CultureInfo.CurrentCulture, out price) &&
                 !decimal.TryParse(normalizedPriceText.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out price))
             {
-                MessageBox.Show("Enter a valid price greater than 0.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("0'dan buyuk gecerli bir fiyat girin.", "Dogrulama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtPrice.Focus();
                 return false;
             }
 
             if (price <= 0)
             {
-                MessageBox.Show("Enter a valid price greater than 0.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("0'dan buyuk gecerli bir fiyat girin.", "Dogrulama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtPrice.Focus();
                 return false;
             }

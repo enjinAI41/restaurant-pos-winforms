@@ -67,18 +67,18 @@ namespace Rivada.Restaurant.WinForms.Forms
         private void ConfigureBillGrid()
         {
             dgvBillItems.Columns.Clear();
-            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colName", HeaderText = "Product", FillWeight = 180 });
-            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colQty", HeaderText = "Qty", FillWeight = 60 });
-            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colUnit", HeaderText = "Unit Price", FillWeight = 90 });
-            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colTotal", HeaderText = "Line Total", FillWeight = 90 });
-            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colNote", HeaderText = "Note", FillWeight = 130 });
+            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colName", HeaderText = "Urun", FillWeight = 180 });
+            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colQty", HeaderText = "Adet", FillWeight = 60 });
+            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colUnit", HeaderText = "Birim Fiyat", FillWeight = 90 });
+            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colTotal", HeaderText = "Satir Toplami", FillWeight = 90 });
+            dgvBillItems.Columns.Add(new DataGridViewTextBoxColumn { Name = "colNote", HeaderText = "Not", FillWeight = 130 });
         }
 
         private void UpdateHeader()
         {
             lblTable.Text = _billId.HasValue
-                ? $"Table: {_tableName} (ID: {_tableId})  |  Bill ID: {_billId}"
-                : "No bill selected";
+                ? $"Masa: {_tableName} (ID: {_tableId})  |  Hesap ID: {_billId}"
+                : "Hesap secilmedi";
         }
 
         private async Task LoadPaymentDataAsync()
@@ -87,8 +87,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             {
                 btnCompletePayment.Enabled = false;
                 MessageBox.Show(
-                    "Please open payment from an order/bill context.",
-                    "No Bill",
+                    "Lutfen odemeyi siparis/hesap ekranindan acin.",
+                    "Hesap Yok",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 return;
@@ -98,8 +98,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             {
                 btnCompletePayment.Enabled = false;
                 MessageBox.Show(
-                    "Payment service is not configured.",
-                    "Configuration Error",
+                    "Odeme servisi yapilandirilmamis.",
+                    "Yapilandirma Hatasi",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return;
@@ -128,8 +128,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Failed to load payment data.\n\n{ex.Message}",
-                    "Error",
+                    $"Odeme verileri yuklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -164,7 +164,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 {
                     MessageBox.Show(
                         result.Message,
-                        "Payment Not Completed",
+                        "Odeme Tamamlanmadi",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                     await LoadPaymentDataAsync();
@@ -173,7 +173,7 @@ namespace Rivada.Restaurant.WinForms.Forms
 
                 MessageBox.Show(
                     result.Message,
-                    "Success",
+                    "Basarili",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
@@ -183,8 +183,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Payment failed.\n\n{ex.Message}",
-                    "Error",
+                    $"Odeme islemi basarisiz oldu.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }

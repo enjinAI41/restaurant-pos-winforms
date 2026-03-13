@@ -51,7 +51,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.MinimizeBox = true;
             this.Name = "LoginForm";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = "Rivada Restaurant Automation - Login";
+            this.Text = "Rivada Restaurant Otomasyonu - Giris";
             this.Resize += new EventHandler(this.LoginForm_Resize);
 
             this.pnlLoginCard.BackColor = Color.White;
@@ -64,21 +64,21 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTitle.ForeColor = Color.FromArgb(15, 23, 42);
             this.lblTitle.Location = new Point(34, 28);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Text = "Restaurant Login";
+            this.lblTitle.Text = "Restoran Girisi";
 
             this.lblSubtitle.AutoSize = true;
             this.lblSubtitle.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
             this.lblSubtitle.ForeColor = Color.FromArgb(100, 116, 139);
             this.lblSubtitle.Location = new Point(36, 70);
             this.lblSubtitle.Name = "lblSubtitle";
-            this.lblSubtitle.Text = "Please sign in to continue";
+            this.lblSubtitle.Text = "Devam etmek icin giris yapin";
 
             this.lblUsername.AutoSize = true;
             this.lblUsername.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.lblUsername.ForeColor = Color.FromArgb(30, 41, 59);
             this.lblUsername.Location = new Point(36, 126);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Text = "Username";
+            this.lblUsername.Text = "Kullanici Adi";
 
             this.txtUsername.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.txtUsername.BorderStyle = BorderStyle.FixedSingle;
@@ -92,7 +92,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblPassword.ForeColor = Color.FromArgb(30, 41, 59);
             this.lblPassword.Location = new Point(36, 198);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Text = "Password";
+            this.lblPassword.Text = "Sifre";
 
             this.txtPassword.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.txtPassword.BorderStyle = BorderStyle.FixedSingle;
@@ -111,7 +111,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new Size(358, 40);
             this.btnLogin.TabIndex = 2;
-            this.btnLogin.Text = "Login";
+            this.btnLogin.Text = "Giris Yap";
             this.btnLogin.UseVisualStyleBackColor = false;
             this.btnLogin.Click += new EventHandler(this.btnLogin_Click);
 
@@ -124,7 +124,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new Size(358, 34);
             this.btnExit.TabIndex = 3;
-            this.btnExit.Text = "Exit";
+            this.btnExit.Text = "Cikis";
             this.btnExit.UseVisualStyleBackColor = false;
             this.btnExit.Click += new EventHandler(this.btnExit_Click);
 

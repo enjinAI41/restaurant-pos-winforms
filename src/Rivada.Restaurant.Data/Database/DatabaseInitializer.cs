@@ -134,31 +134,143 @@ VALUES
 
 INSERT OR IGNORE INTO Users (RoleId, Username, PasswordHash, FullName, IsActive, CreatedAt, UpdatedAt)
 VALUES
-((SELECT Id FROM Roles WHERE Name = 'Cashier' LIMIT 1), 'cashier1', '123456', 'Main Cashier', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Roles WHERE Name = 'Waiter' LIMIT 1), 'waiter1', '123456', 'Floor Waiter', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Roles WHERE Name = 'Admin' LIMIT 1), 'admin', 'admin123', 'System Admin', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+((SELECT Id FROM Roles WHERE Name = 'Cashier' LIMIT 1), 'cashier1', '123456', 'Ana Kasa', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT Id FROM Roles WHERE Name = 'Waiter' LIMIT 1), 'waiter1', '123456', 'Salon Garsonu', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT Id FROM Roles WHERE Name = 'Admin' LIMIT 1), 'admin', 'admin123', 'Sistem Yoneticisi', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+UPDATE RestaurantTables
+SET Name = 'T1', Area = 'DIS', IsActive = 1, UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Terrace 1'
+  AND NOT EXISTS (SELECT 1 FROM RestaurantTables WHERE Name = 'T1');
+
+UPDATE RestaurantTables
+SET Name = 'T2', Area = 'DIS', IsActive = 1, UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Terrace 2'
+  AND NOT EXISTS (SELECT 1 FROM RestaurantTables WHERE Name = 'T2');
+
+UPDATE RestaurantTables
+SET Name = 'T3', Area = 'DIS', IsActive = 1, UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Terrace 3'
+  AND NOT EXISTS (SELECT 1 FROM RestaurantTables WHERE Name = 'T3');
+
+UPDATE RestaurantTables
+SET Name = 'T4', Area = 'DIS', IsActive = 1, UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Hall 1'
+  AND NOT EXISTS (SELECT 1 FROM RestaurantTables WHERE Name = 'T4');
+
+UPDATE RestaurantTables
+SET Name = 'T5', Area = 'DIS', IsActive = 1, UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Hall 2'
+  AND NOT EXISTS (SELECT 1 FROM RestaurantTables WHERE Name = 'T5');
+
+UPDATE RestaurantTables
+SET Name = 'İÇ 1', Area = 'IC', IsActive = 1, UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Hall 3'
+  AND NOT EXISTS (SELECT 1 FROM RestaurantTables WHERE Name = 'İÇ 1');
 
 INSERT OR IGNORE INTO RestaurantTables (Name, Area, Status, IsActive, CreatedAt, UpdatedAt)
 VALUES
-('Terrace 1', 'Terrace', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Terrace 2', 'Terrace', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Terrace 3', 'Terrace', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Hall 1', 'Hall', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Hall 2', 'Hall', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Hall 3', 'Hall', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('T1', 'DIS', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('T2', 'DIS', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('T3', 'DIS', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('T4', 'DIS', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('T5', 'DIS', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 1', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 2', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 3', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 4', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 5', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 6', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 7', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('İÇ 8', 'IC', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+UPDATE RestaurantTables
+SET IsActive = CASE
+    WHEN Name IN ('T1', 'T2', 'T3', 'T4', 'T5', 'İÇ 1', 'İÇ 2', 'İÇ 3', 'İÇ 4', 'İÇ 5', 'İÇ 6', 'İÇ 7', 'İÇ 8') THEN 1
+    ELSE 0
+END,
+UpdatedAt = CURRENT_TIMESTAMP;
 
 INSERT OR IGNORE INTO Categories (Name, IsActive, CreatedAt, UpdatedAt)
 VALUES
-('Drink', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Food', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Dessert', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('Icecek', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Yemek', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Tatli', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+UPDATE Categories
+SET Name = 'Icecek',
+    IsActive = 1,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Drink'
+  AND NOT EXISTS (SELECT 1 FROM Categories WHERE Name = 'Icecek');
+
+UPDATE Categories
+SET Name = 'Yemek',
+    IsActive = 1,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Food'
+  AND NOT EXISTS (SELECT 1 FROM Categories WHERE Name = 'Yemek');
+
+UPDATE Categories
+SET Name = 'Tatli',
+    IsActive = 1,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Dessert'
+  AND NOT EXISTS (SELECT 1 FROM Categories WHERE Name = 'Tatli');
+
+UPDATE Categories
+SET IsActive = CASE
+    WHEN Name IN ('Icecek', 'Yemek', 'Tatli') THEN 1
+    ELSE 0
+END,
+UpdatedAt = CURRENT_TIMESTAMP;
 
 INSERT OR IGNORE INTO Products (CategoryId, Name, Price, IsActive, CreatedAt, UpdatedAt)
 VALUES
-((SELECT Id FROM Categories WHERE Name = 'Drink' LIMIT 1), 'Tea', 25.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Categories WHERE Name = 'Drink' LIMIT 1), 'Coffee', 45.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Categories WHERE Name = 'Food' LIMIT 1), 'Cheeseburger', 220.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Categories WHERE Name = 'Dessert' LIMIT 1), 'Baklava', 130.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+((SELECT Id FROM Categories WHERE Name = 'Icecek' LIMIT 1), 'Cay', 25.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT Id FROM Categories WHERE Name = 'Icecek' LIMIT 1), 'Kahve', 45.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT Id FROM Categories WHERE Name = 'Yemek' LIMIT 1), 'Cizburger', 220.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+((SELECT Id FROM Categories WHERE Name = 'Tatli' LIMIT 1), 'Baklava', 130.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+UPDATE Products
+SET Name = 'Cay',
+    IsActive = 1,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Tea'
+  AND NOT EXISTS (
+      SELECT 1 FROM Products p2
+      WHERE p2.CategoryId = Products.CategoryId
+        AND p2.Name = 'Cay');
+
+UPDATE Products
+SET Name = 'Kahve',
+    IsActive = 1,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Coffee'
+  AND NOT EXISTS (
+      SELECT 1 FROM Products p2
+      WHERE p2.CategoryId = Products.CategoryId
+        AND p2.Name = 'Kahve');
+
+UPDATE Products
+SET Name = 'Cizburger',
+    IsActive = 1,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Name = 'Cheeseburger'
+  AND NOT EXISTS (
+      SELECT 1 FROM Products p2
+      WHERE p2.CategoryId = Products.CategoryId
+        AND p2.Name = 'Cizburger');
+
+UPDATE Users
+SET FullName = CASE Username
+    WHEN 'cashier1' THEN 'Ana Kasa'
+    WHEN 'waiter1' THEN 'Salon Garsonu'
+    WHEN 'admin' THEN 'Sistem Yoneticisi'
+    ELSE FullName
+END,
+UpdatedAt = CURRENT_TIMESTAMP
+WHERE Username IN ('cashier1', 'waiter1', 'admin');
 ";
 
             command.ExecuteNonQuery();

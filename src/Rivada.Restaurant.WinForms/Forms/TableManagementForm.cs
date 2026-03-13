@@ -48,8 +48,8 @@ namespace Rivada.Restaurant.WinForms.Forms
                 ? _loggedInUser.Username
                 : _loggedInUser.FullName;
 
-            lblWelcome.Text = $"User: {fullName}";
-            lblRole.Text = $"Role ID: {_loggedInUser.RoleId}";
+            lblWelcome.Text = $"Kullanici: {fullName}";
+            lblRole.Text = $"Rol ID: {_loggedInUser.RoleId}";
         }
 
         private void ConfigureVisualStyle()
@@ -71,8 +71,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Failed to load tables.\n\n{ex.Message}",
-                    "Error",
+                    $"Masalar yuklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -98,8 +98,9 @@ namespace Rivada.Restaurant.WinForms.Forms
         private Control CreateTableCard(TableDisplayItem table)
         {
             var isOccupied = table.IsOccupied;
-            var backColor = isOccupied ? Color.FromArgb(236, 253, 245) : Color.FromArgb(239, 246, 255);
-            var borderColor = isOccupied ? Color.FromArgb(22, 163, 74) : Color.FromArgb(37, 99, 235);
+            var backColor = isOccupied ? Color.FromArgb(34, 197, 94) : Color.Black;
+            var borderColor = isOccupied ? Color.FromArgb(22, 163, 74) : Color.FromArgb(64, 64, 64);
+            var textColor = Color.White;
 
             var panel = new Panel
             {
@@ -127,7 +128,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Height = 32,
                 Location = new Point(14, 18),
                 Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(15, 23, 42),
+                ForeColor = textColor,
                 Text = table.TableName,
                 Tag = table
             };
@@ -140,15 +141,15 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Height = 24,
                 Location = new Point(14, 64),
                 Font = new Font("Segoe UI", 10F, FontStyle.Regular),
-                ForeColor = isOccupied ? Color.FromArgb(21, 128, 61) : Color.FromArgb(30, 64, 175),
-                Text = $"Status: {(isOccupied ? "Occupied" : "Empty")}",
+                ForeColor = textColor,
+                Text = $"Durum: {(isOccupied ? "Dolu" : "Bos")}",
                 Tag = table
             };
             lblStatus.Click += TableCard_Click;
 
             var totalText = isOccupied
-                ? $"Total: {table.CurrentTotalAmount:C2}"
-                : "Total: -";
+                ? $"Toplam: {table.CurrentTotalAmount:C2}"
+                : "Toplam: -";
 
             var lblTotal = new Label
             {
@@ -157,7 +158,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Height = 24,
                 Location = new Point(14, 96),
                 Font = new Font("Segoe UI", 10F, FontStyle.Regular),
-                ForeColor = Color.FromArgb(51, 65, 85),
+                ForeColor = textColor,
                 Text = totalText,
                 Tag = table
             };
@@ -170,8 +171,8 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Height = 20,
                 Location = new Point(14, 128),
                 Font = new Font("Segoe UI", 8.5F, FontStyle.Italic),
-                ForeColor = Color.FromArgb(100, 116, 139),
-                Text = "Click to open orders",
+                ForeColor = Color.FromArgb(229, 231, 235),
+                Text = "Siparis icin tiklayin",
                 Tag = table
             };
             lblHint.Click += TableCard_Click;
@@ -213,8 +214,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Unable to open table.\n\n{ex.Message}",
-                    "Operation Error",
+                    $"Masa acilamadi.\n\n{ex.Message}",
+                    "Islem Hatasi",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -236,8 +237,8 @@ namespace Rivada.Restaurant.WinForms.Forms
         private async void btnPayment_Click(object? sender, EventArgs e)
         {
             MessageBox.Show(
-                "Open payment from a table order to process a specific bill.",
-                "Select a Bill",
+                "Belirli bir hesabi odemek icin masa siparis ekranindan odeme acin.",
+                "Hesap Sec",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             await LoadAndRenderTablesAsync();

@@ -42,7 +42,7 @@ namespace Rivada.Restaurant.WinForms
                     return;
                 }
 
-                ShowFatalError(new Exception("An unknown fatal error occurred."));
+                ShowFatalError(new Exception("Bilinmeyen kritik bir hata olustu."));
             };
 
             TaskScheduler.UnobservedTaskException += (_, args) =>
@@ -55,8 +55,8 @@ namespace Rivada.Restaurant.WinForms
         private static void ShowFatalError(Exception ex)
         {
             MessageBox.Show(
-                $"An unexpected error occurred.\n\n{ex.Message}",
-                "Application Error",
+                $"Beklenmeyen bir hata olustu.\n\n{ex.Message}",
+                "Uygulama Hatasi",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }

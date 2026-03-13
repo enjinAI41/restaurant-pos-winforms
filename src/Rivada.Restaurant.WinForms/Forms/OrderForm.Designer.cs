@@ -70,7 +70,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.MinimumSize = new Size(1200, 720);
             this.Name = "OrderForm";
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Text = "Order";
+            this.Text = "Siparis";
 
             this.pnlTop.BackColor = Color.White;
             this.pnlTop.Dock = DockStyle.Top;
@@ -81,7 +81,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTableTitle.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblTableTitle.ForeColor = Color.FromArgb(15, 23, 42);
             this.lblTableTitle.Location = new Point(20, 24);
-            this.lblTableTitle.Text = "Table";
+            this.lblTableTitle.Text = "Masa";
 
             this.tlpMain.Dock = DockStyle.Fill;
             this.tlpMain.Padding = new Padding(16, 16, 16, 12);
@@ -92,7 +92,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.tlpMain.RowCount = 1;
             this.tlpMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
-            this.grpCategories.Text = "Categories";
+            this.grpCategories.Text = "Kategoriler";
             this.grpCategories.Dock = DockStyle.Fill;
             this.grpCategories.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.grpCategories.BackColor = Color.White;
@@ -105,7 +105,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lstCategories.ItemHeight = 17;
             this.lstCategories.SelectedIndexChanged += new EventHandler(this.lstCategories_SelectedIndexChanged);
 
-            this.grpProducts.Text = "Products";
+            this.grpProducts.Text = "Urunler";
             this.grpProducts.Dock = DockStyle.Fill;
             this.grpProducts.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.grpProducts.BackColor = Color.White;
@@ -117,7 +117,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.flpProducts.Padding = new Padding(12);
             this.flpProducts.BackColor = Color.White;
 
-            this.grpBill.Text = "Current Bill";
+            this.grpBill.Text = "Mevcut Hesap";
             this.grpBill.Dock = DockStyle.Fill;
             this.grpBill.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.grpBill.BackColor = Color.White;
@@ -145,7 +145,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblSubtotalTitle.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.lblSubtotalTitle.ForeColor = Color.FromArgb(51, 65, 85);
             this.lblSubtotalTitle.Location = new Point(22, 20);
-            this.lblSubtotalTitle.Text = "Subtotal:";
+            this.lblSubtotalTitle.Text = "Ara Toplam:";
 
             this.lblSubtotalValue.AutoSize = true;
             this.lblSubtotalValue.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
@@ -157,7 +157,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTotalTitle.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblTotalTitle.ForeColor = Color.FromArgb(15, 23, 42);
             this.lblTotalTitle.Location = new Point(22, 50);
-            this.lblTotalTitle.Text = "Total:";
+            this.lblTotalTitle.Text = "Toplam:";
 
             this.lblTotalValue.AutoSize = true;
             this.lblTotalValue.Font = new Font("Segoe UI", 13F, FontStyle.Bold, GraphicsUnit.Point);
@@ -165,10 +165,10 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTotalValue.Location = new Point(84, 48);
             this.lblTotalValue.Text = "0.00";
 
-            ConfigureFooterButton(this.btnBack, "Back", 980, false);
+            ConfigureFooterButton(this.btnBack, "Geri", 980, false);
             this.btnBack.Click += new EventHandler(this.btnBack_Click);
 
-            ConfigureFooterButton(this.btnProceedPayment, "Proceed to Payment", 1110, true);
+            ConfigureFooterButton(this.btnProceedPayment, "Odemeye Gec", 1110, true);
             this.btnProceedPayment.Size = new Size(230, 44);
             this.btnProceedPayment.Click += new EventHandler(this.btnProceedPayment_Click);
 

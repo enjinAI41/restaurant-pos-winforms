@@ -21,12 +21,46 @@ namespace Rivada.Restaurant.Data.Repositories
 SELECT Id, Name, Area, Status, IsActive, CreatedAt, UpdatedAt
 FROM RestaurantTables
 WHERE IsActive = 1
-ORDER BY Name;";
+ORDER BY
+CASE Name
+    WHEN 'T1' THEN 1
+    WHEN 'T2' THEN 2
+    WHEN 'T3' THEN 3
+    WHEN 'T4' THEN 4
+    WHEN 'T5' THEN 5
+    WHEN 'İÇ 1' THEN 6
+    WHEN 'İÇ 2' THEN 7
+    WHEN 'İÇ 3' THEN 8
+    WHEN 'İÇ 4' THEN 9
+    WHEN 'İÇ 5' THEN 10
+    WHEN 'İÇ 6' THEN 11
+    WHEN 'İÇ 7' THEN 12
+    WHEN 'İÇ 8' THEN 13
+    ELSE 999
+END,
+Id;";
 
             const string allSql = @"
 SELECT Id, Name, Area, Status, IsActive, CreatedAt, UpdatedAt
 FROM RestaurantTables
-ORDER BY Name;";
+ORDER BY
+CASE Name
+    WHEN 'T1' THEN 1
+    WHEN 'T2' THEN 2
+    WHEN 'T3' THEN 3
+    WHEN 'T4' THEN 4
+    WHEN 'T5' THEN 5
+    WHEN 'İÇ 1' THEN 6
+    WHEN 'İÇ 2' THEN 7
+    WHEN 'İÇ 3' THEN 8
+    WHEN 'İÇ 4' THEN 9
+    WHEN 'İÇ 5' THEN 10
+    WHEN 'İÇ 6' THEN 11
+    WHEN 'İÇ 7' THEN 12
+    WHEN 'İÇ 8' THEN 13
+    ELSE 999
+END,
+Id;";
 
             using var connection = _databaseHelper.CreateConnection();
             connection.Open();

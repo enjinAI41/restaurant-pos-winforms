@@ -38,7 +38,7 @@ namespace Rivada.Restaurant.Services
                     Id = x.Id,
                     ProductName = x.Name,
                     CategoryId = x.CategoryId,
-                    CategoryName = categoryMap.TryGetValue(x.CategoryId, out var categoryName) ? categoryName : "Unknown",
+                    CategoryName = categoryMap.TryGetValue(x.CategoryId, out var categoryName) ? categoryName : "Bilinmiyor",
                     Price = x.Price,
                     IsActive = x.IsActive
                 })
@@ -62,7 +62,7 @@ namespace Rivada.Restaurant.Services
         {
             if (productId <= 0)
             {
-                throw new InvalidOperationException("Select a valid product to update.");
+                throw new InvalidOperationException("Guncellemek icin gecerli bir urun secin.");
             }
 
             ValidateInput(name, categoryId, price);
@@ -78,7 +78,7 @@ namespace Rivada.Restaurant.Services
 
             if (!updated)
             {
-                throw new InvalidOperationException("Product could not be updated.");
+                throw new InvalidOperationException("Urun guncellenemedi.");
             }
         }
 
@@ -86,13 +86,13 @@ namespace Rivada.Restaurant.Services
         {
             if (productId <= 0)
             {
-                throw new InvalidOperationException("Select a valid product first.");
+                throw new InvalidOperationException("Once gecerli bir urun secin.");
             }
 
             var updated = _productRepository.SetProductInactive(productId);
             if (!updated)
             {
-                throw new InvalidOperationException("Product could not be marked inactive.");
+                throw new InvalidOperationException("Urun pasif olarak isaretlenemedi.");
             }
         }
 
@@ -100,7 +100,7 @@ namespace Rivada.Restaurant.Services
         {
             if (productId <= 0)
             {
-                throw new InvalidOperationException("Select a valid product first.");
+                throw new InvalidOperationException("Once gecerli bir urun secin.");
             }
 
             try
@@ -108,12 +108,12 @@ namespace Rivada.Restaurant.Services
                 var deleted = _productRepository.DeleteProduct(productId);
                 if (!deleted)
                 {
-                    throw new InvalidOperationException("Product could not be deleted.");
+                    throw new InvalidOperationException("Urun silinemedi.");
                 }
             }
             catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
             {
-                throw new InvalidOperationException("Product is used in bill history. Mark it inactive instead of deleting.", ex);
+                throw new InvalidOperationException("Urun hesap gecmisinde kullaniliyor. Silmek yerine pasif yapin.", ex);
             }
         }
 
@@ -121,17 +121,17 @@ namespace Rivada.Restaurant.Services
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new InvalidOperationException("Product name is required.");
+                throw new InvalidOperationException("Urun adi zorunludur.");
             }
 
             if (categoryId <= 0)
             {
-                throw new InvalidOperationException("Category is required.");
+                throw new InvalidOperationException("Kategori zorunludur.");
             }
 
             if (price <= 0)
             {
-                throw new InvalidOperationException("Price must be greater than zero.");
+                throw new InvalidOperationException("Fiyat sifirdan buyuk olmalidir.");
             }
         }
     }

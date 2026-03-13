@@ -12,7 +12,7 @@ namespace Rivada.Restaurant.Data.Database
         {
             if (string.IsNullOrWhiteSpace(databasePath))
             {
-                throw new ArgumentException("Database path cannot be empty.", nameof(databasePath));
+                throw new ArgumentException("Veritabani yolu bos olamaz.", nameof(databasePath));
             }
 
             var fullPath = Path.GetFullPath(databasePath);

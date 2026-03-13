@@ -44,12 +44,12 @@ namespace Rivada.Restaurant.Services
         {
             if (tableId <= 0)
             {
-                throw new InvalidOperationException("Invalid table selection.");
+                throw new InvalidOperationException("Gecersiz masa secimi.");
             }
 
             if (userId <= 0)
             {
-                throw new InvalidOperationException("Invalid user session.");
+                throw new InvalidOperationException("Gecersiz kullanici oturumu.");
             }
 
             var openBill = _billRepository.GetOpenBillByTableId(tableId);
@@ -70,7 +70,7 @@ namespace Rivada.Restaurant.Services
                     return existingOpenBill.Id;
                 }
 
-                throw new InvalidOperationException("Failed to create bill for the selected table.", ex);
+                throw new InvalidOperationException("Secilen masa icin hesap olusturulamadi.", ex);
             }
         }
     }

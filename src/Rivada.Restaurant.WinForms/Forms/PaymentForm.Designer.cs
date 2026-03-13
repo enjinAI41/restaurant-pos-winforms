@@ -68,7 +68,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.MinimumSize = new Size(1040, 680);
             this.Name = "PaymentForm";
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Text = "Cash / Payment";
+            this.Text = "Kasa / Odeme";
 
             this.pnlTop.Dock = DockStyle.Top;
             this.pnlTop.Height = 80;
@@ -78,13 +78,13 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTitle.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblTitle.ForeColor = Color.FromArgb(15, 23, 42);
             this.lblTitle.Location = new Point(20, 18);
-            this.lblTitle.Text = "Complete Payment";
+            this.lblTitle.Text = "Odemeyi Tamamla";
 
             this.lblTable.AutoSize = true;
             this.lblTable.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.lblTable.ForeColor = Color.FromArgb(71, 85, 105);
             this.lblTable.Location = new Point(22, 50);
-            this.lblTable.Text = "Table";
+            this.lblTable.Text = "Masa";
 
             this.dgvBillItems.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             this.dgvBillItems.Location = new Point(18, 92);
@@ -103,7 +103,7 @@ namespace Rivada.Restaurant.WinForms.Forms
 
             this.grpReceipt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             this.grpReceipt.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.grpReceipt.Text = "Receipt Preview";
+            this.grpReceipt.Text = "Fis Onizleme";
             this.grpReceipt.Location = new Point(766, 92);
             this.grpReceipt.Size = new Size(376, 520);
             this.grpReceipt.BackColor = Color.White;
@@ -120,25 +120,25 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.pnlBottom.BackColor = Color.White;
 
             this.grpPaymentMethod.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.grpPaymentMethod.Text = "Payment Method";
+            this.grpPaymentMethod.Text = "Odeme Yontemi";
             this.grpPaymentMethod.Location = new Point(18, 12);
             this.grpPaymentMethod.Size = new Size(290, 106);
             this.grpPaymentMethod.BackColor = Color.White;
 
             this.rdoCash.AutoSize = true;
             this.rdoCash.Location = new Point(18, 32);
-            this.rdoCash.Text = "Cash";
+            this.rdoCash.Text = "Nakit";
             this.rdoCash.Checked = true;
 
             this.rdoCard.AutoSize = true;
             this.rdoCard.Location = new Point(18, 62);
-            this.rdoCard.Text = "Card";
+            this.rdoCard.Text = "Kart";
 
             this.lblSubtotalTitle.AutoSize = true;
             this.lblSubtotalTitle.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.lblSubtotalTitle.ForeColor = Color.FromArgb(71, 85, 105);
             this.lblSubtotalTitle.Location = new Point(330, 34);
-            this.lblSubtotalTitle.Text = "Subtotal:";
+            this.lblSubtotalTitle.Text = "Ara Toplam:";
 
             this.lblSubtotalValue.AutoSize = true;
             this.lblSubtotalValue.Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold, GraphicsUnit.Point);
@@ -150,7 +150,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTotalTitle.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblTotalTitle.ForeColor = Color.FromArgb(15, 23, 42);
             this.lblTotalTitle.Location = new Point(330, 66);
-            this.lblTotalTitle.Text = "Total:";
+            this.lblTotalTitle.Text = "Toplam:";
 
             this.lblTotalValue.AutoSize = true;
             this.lblTotalValue.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point);
@@ -161,7 +161,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnCancel.Location = new Point(836, 42);
             this.btnCancel.Size = new Size(130, 42);
-            this.btnCancel.Text = "Cancel";
+            this.btnCancel.Text = "Iptal";
             this.btnCancel.FlatStyle = FlatStyle.Flat;
             this.btnCancel.FlatAppearance.BorderSize = 0;
             this.btnCancel.BackColor = Color.FromArgb(226, 232, 240);
@@ -172,7 +172,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.btnCompletePayment.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnCompletePayment.Location = new Point(976, 42);
             this.btnCompletePayment.Size = new Size(166, 42);
-            this.btnCompletePayment.Text = "Complete Payment";
+            this.btnCompletePayment.Text = "Odemeyi Tamamla";
             this.btnCompletePayment.FlatStyle = FlatStyle.Flat;
             this.btnCompletePayment.FlatAppearance.BorderSize = 0;
             this.btnCompletePayment.BackColor = Color.FromArgb(15, 118, 110);

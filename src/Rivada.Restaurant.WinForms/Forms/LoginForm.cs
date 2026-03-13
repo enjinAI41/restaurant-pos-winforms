@@ -69,8 +69,8 @@ namespace Rivada.Restaurant.WinForms.Forms
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 {
                     MessageBox.Show(
-                        "Username and password are required.",
-                        "Validation",
+                        "Kullanici adi ve sifre zorunludur.",
+                        "Dogrulama",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                     return;
@@ -79,8 +79,8 @@ namespace Rivada.Restaurant.WinForms.Forms
                 if (_authService == null)
                 {
                     MessageBox.Show(
-                        "Authentication service is not configured.",
-                        "Configuration Error",
+                        "Kimlik dogrulama servisi yapilandirilmamis.",
+                        "Yapilandirma Hatasi",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                     return;
@@ -90,8 +90,8 @@ namespace Rivada.Restaurant.WinForms.Forms
                 if (loggedInUser == null)
                 {
                     MessageBox.Show(
-                        "Invalid username or password.",
-                        "Login Failed",
+                        "Kullanici adi veya sifre hatali.",
+                        "Giris Basarisiz",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                     txtPassword.Clear();
@@ -104,8 +104,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An unexpected error occurred during login.\n\n{ex.Message}",
-                    "Error",
+                    $"Giris sirasinda beklenmeyen bir hata olustu.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -121,8 +121,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             if (_tableManagementService == null || _orderService == null || _paymentService == null || _productManagementService == null)
             {
                 MessageBox.Show(
-                    "Application services are not configured.",
-                    "Configuration Error",
+                    "Uygulama servisleri yapilandirilmamis.",
+                    "Yapilandirma Hatasi",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return;

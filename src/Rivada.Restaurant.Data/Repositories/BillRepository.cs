@@ -47,7 +47,7 @@ WHERE Id = @TableId;";
                 if (tableCommand.ExecuteNonQuery() == 0)
                 {
                     transaction.Rollback();
-                    throw new InvalidOperationException("Table was not found while creating bill.");
+                    throw new InvalidOperationException("Hesap olusturulurken masa bulunamadi.");
                 }
 
                 transaction.Commit();

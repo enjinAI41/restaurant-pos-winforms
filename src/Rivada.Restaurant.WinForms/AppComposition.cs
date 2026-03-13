@@ -53,7 +53,7 @@ namespace Rivada.Restaurant.WinForms
 
             if (!TableExists(connection, "Users"))
             {
-                throw new InvalidOperationException("Database initialization failed: Users table is missing.");
+                throw new InvalidOperationException("Veritabani baslatma hatasi: Users tablosu bulunamadi.");
             }
 
             using var command = connection.CreateCommand();
@@ -61,7 +61,7 @@ namespace Rivada.Restaurant.WinForms
             var userCount = Convert.ToInt32(command.ExecuteScalar());
             if (userCount <= 0)
             {
-                throw new InvalidOperationException("Database initialization failed: no users found in Users table.");
+                throw new InvalidOperationException("Veritabani baslatma hatasi: Users tablosunda kullanici yok.");
             }
         }
 

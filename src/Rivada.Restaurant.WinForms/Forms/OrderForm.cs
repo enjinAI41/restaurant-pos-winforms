@@ -55,7 +55,7 @@ namespace Rivada.Restaurant.WinForms.Forms
 
         private void UpdateHeader()
         {
-            lblTableTitle.Text = $"Table: {_tableName}  |  Bill ID: {_billId}";
+            lblTableTitle.Text = $"Masa: {_tableName}  |  Hesap ID: {_billId}";
         }
 
         private void ConfigureVisualStyle()
@@ -88,35 +88,35 @@ namespace Rivada.Restaurant.WinForms.Forms
             var colName = new DataGridViewTextBoxColumn
             {
                 Name = "colProductName",
-                HeaderText = "Product",
+                HeaderText = "Urun",
                 FillWeight = 200
             };
 
             var colQty = new DataGridViewTextBoxColumn
             {
                 Name = "colQuantity",
-                HeaderText = "Qty",
+                HeaderText = "Adet",
                 FillWeight = 70
             };
 
             var colUnitPrice = new DataGridViewTextBoxColumn
             {
                 Name = "colUnitPrice",
-                HeaderText = "Unit Price",
+                HeaderText = "Birim Fiyat",
                 FillWeight = 95
             };
 
             var colLineTotal = new DataGridViewTextBoxColumn
             {
                 Name = "colLineTotal",
-                HeaderText = "Line Total",
+                HeaderText = "Satir Toplami",
                 FillWeight = 95
             };
 
             var colNote = new DataGridViewTextBoxColumn
             {
                 Name = "colNote",
-                HeaderText = "Note",
+                HeaderText = "Not",
                 FillWeight = 145
             };
 
@@ -143,8 +143,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             var colEditNote = new DataGridViewButtonColumn
             {
                 Name = "colEditNote",
-                HeaderText = "Note",
-                Text = "Edit",
+                HeaderText = "Not",
+                Text = "Duzenle",
                 UseColumnTextForButtonValue = true,
                 FillWeight = 70,
                 FlatStyle = FlatStyle.Flat
@@ -153,7 +153,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             var colRemove = new DataGridViewButtonColumn
             {
                 Name = "colRemove",
-                HeaderText = "Remove",
+                HeaderText = "Sil",
                 Text = "X",
                 UseColumnTextForButtonValue = true,
                 FillWeight = 55,
@@ -192,8 +192,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not load categories.\n\n{ex.Message}",
-                    "Error",
+                    $"Kategoriler yuklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -229,8 +229,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not load products.\n\n{ex.Message}",
-                    "Error",
+                    $"Urunler yuklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -286,8 +286,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not add product.\n\n{ex.Message}",
-                    "Error",
+                    $"Urun eklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -310,8 +310,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not load bill details.\n\n{ex.Message}",
-                    "Error",
+                    $"Hesap detaylari yuklenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -336,7 +336,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                     item.Note ?? string.Empty,
                     "+",
                     "-",
-                    "Edit",
+                    "Duzenle",
                     "X");
             }
         }
@@ -397,8 +397,8 @@ namespace Rivada.Restaurant.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not update bill item.\n\n{ex.Message}",
-                    "Error",
+                    $"Hesap kalemi guncellenemedi.\n\n{ex.Message}",
+                    "Hata",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -430,7 +430,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             {
                 using var form = new Form
                 {
-                    Text = "Edit Item Note",
+                    Text = "Kalem Notunu Duzenle",
                     StartPosition = FormStartPosition.CenterParent,
                     Size = new Size(440, 220),
                     FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -440,7 +440,7 @@ namespace Rivada.Restaurant.WinForms.Forms
 
                 var lbl = new Label
                 {
-                    Text = "Note:",
+                    Text = "Not:",
                     AutoSize = true,
                     Location = new Point(20, 22)
                 };
@@ -455,7 +455,7 @@ namespace Rivada.Restaurant.WinForms.Forms
 
                 var btnSave = new Button
                 {
-                    Text = "Save",
+                    Text = "Kaydet",
                     DialogResult = DialogResult.OK,
                     Location = new Point(246, 136),
                     Size = new Size(80, 32)
@@ -463,7 +463,7 @@ namespace Rivada.Restaurant.WinForms.Forms
 
                 var btnCancel = new Button
                 {
-                    Text = "Cancel",
+                    Text = "Iptal",
                     DialogResult = DialogResult.Cancel,
                     Location = new Point(330, 136),
                     Size = new Size(80, 32)

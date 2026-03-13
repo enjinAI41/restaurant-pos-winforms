@@ -43,7 +43,7 @@ namespace Rivada.Restaurant.Services
                 return new PaymentCompletionResult
                 {
                     Success = false,
-                    Message = "Invalid payment context. Reopen the bill and try again."
+                    Message = "Gecersiz odeme baglami. Hesabi yeniden acip tekrar deneyin."
                 };
             }
 
@@ -55,15 +55,15 @@ namespace Rivada.Restaurant.Services
                 {
                     Success = false,
                     Message = hasItems
-                        ? "Payment could not be completed. Bill may already be closed."
-                        : "Bill has no items. Add products before payment."
+                        ? "Odeme tamamlanamadi. Hesap zaten kapatilmis olabilir."
+                        : "Hesapta urun yok. Odemeden once urun ekleyin."
                 };
             }
 
             return new PaymentCompletionResult
             {
                 Success = true,
-                Message = $"Payment completed successfully. Total: {paidAmount.Value.ToString("C2", CultureInfo.CurrentCulture)}"
+                Message = $"Odeme basariyla tamamlandi. Toplam: {paidAmount.Value.ToString("C2", CultureInfo.CurrentCulture)}"
             };
         }
 
@@ -71,9 +71,9 @@ namespace Rivada.Restaurant.Services
         {
             var sb = new StringBuilder();
             sb.AppendLine("Rivada Restaurant");
-            sb.AppendLine($"Table: {tableName}");
-            sb.AppendLine($"Bill: {billId}");
-            sb.AppendLine($"Date: {DateTime.Now:yyyy-MM-dd HH:mm}");
+            sb.AppendLine($"Masa: {tableName}");
+            sb.AppendLine($"Hesap: {billId}");
+            sb.AppendLine($"Tarih: {DateTime.Now:yyyy-MM-dd HH:mm}");
             sb.AppendLine(new string('-', 32));
 
             foreach (var item in items)
@@ -81,12 +81,12 @@ namespace Rivada.Restaurant.Services
                 sb.AppendLine($"{item.ProductNameSnapshot} x{item.Quantity}  {item.LineTotal.ToString("C2", CultureInfo.CurrentCulture)}");
                 if (!string.IsNullOrWhiteSpace(item.Note))
                 {
-                    sb.AppendLine($"  Note: {item.Note}");
+                    sb.AppendLine($"  Not: {item.Note}");
                 }
             }
 
             sb.AppendLine(new string('-', 32));
-            sb.AppendLine($"TOTAL: {total.ToString("C2", CultureInfo.CurrentCulture)}");
+            sb.AppendLine($"TOPLAM: {total.ToString("C2", CultureInfo.CurrentCulture)}");
             return sb.ToString();
         }
     }

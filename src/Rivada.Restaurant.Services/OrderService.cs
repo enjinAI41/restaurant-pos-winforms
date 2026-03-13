@@ -52,7 +52,7 @@ namespace Rivada.Restaurant.Services
             var product = _productRepository.GetProductById(productId);
             if (product == null || !product.IsActive)
             {
-                throw new InvalidOperationException("Product not found or inactive.");
+                throw new InvalidOperationException("Urun bulunamadi veya pasif.");
             }
 
             var normalizedNote = NormalizeNote(note);
@@ -62,7 +62,7 @@ namespace Rivada.Restaurant.Services
             {
                 if (!_billItemRepository.UpdateBillItemQuantity(existingItem.Id, existingItem.Quantity + 1))
                 {
-                    throw new InvalidOperationException("Could not update existing bill item quantity.");
+                    throw new InvalidOperationException("Mevcut hesap kalemi adedi guncellenemedi.");
                 }
 
                 return;
@@ -85,7 +85,7 @@ namespace Rivada.Restaurant.Services
             var item = GetBillItemOrThrow(billItemId);
             if (!_billItemRepository.UpdateBillItemQuantity(billItemId, item.Quantity + 1))
             {
-                throw new InvalidOperationException("Could not increase bill item quantity.");
+                throw new InvalidOperationException("Hesap kalemi adedi artirilamadi.");
             }
         }
 
@@ -97,7 +97,7 @@ namespace Rivada.Restaurant.Services
             {
                 if (!_billItemRepository.RemoveBillItem(billItemId))
                 {
-                    throw new InvalidOperationException("Could not remove bill item.");
+                    throw new InvalidOperationException("Hesap kalemi silinemedi.");
                 }
 
                 return;
@@ -105,7 +105,7 @@ namespace Rivada.Restaurant.Services
 
             if (!_billItemRepository.UpdateBillItemQuantity(billItemId, item.Quantity - 1))
             {
-                throw new InvalidOperationException("Could not decrease bill item quantity.");
+                throw new InvalidOperationException("Hesap kalemi adedi azaltilamadi.");
             }
         }
 
@@ -113,7 +113,7 @@ namespace Rivada.Restaurant.Services
         {
             if (!_billItemRepository.RemoveBillItem(billItemId))
             {
-                throw new InvalidOperationException("Could not remove bill item.");
+                throw new InvalidOperationException("Hesap kalemi silinemedi.");
             }
         }
 
@@ -127,12 +127,12 @@ namespace Rivada.Restaurant.Services
             {
                 if (!_billItemRepository.UpdateBillItemQuantity(duplicate.Id, duplicate.Quantity + item.Quantity))
                 {
-                    throw new InvalidOperationException("Could not merge duplicate bill item.");
+                    throw new InvalidOperationException("Ayni hesap kalemleri birlestirilemedi.");
                 }
 
                 if (!_billItemRepository.RemoveBillItem(billItemId))
                 {
-                    throw new InvalidOperationException("Could not remove old bill item after merge.");
+                    throw new InvalidOperationException("Birlestirme sonrasi eski hesap kalemi silinemedi.");
                 }
 
                 return;
@@ -140,7 +140,7 @@ namespace Rivada.Restaurant.Services
 
             if (!_billItemRepository.UpdateBillItemNote(billItemId, normalizedNote))
             {
-                throw new InvalidOperationException("Could not update bill item note.");
+                throw new InvalidOperationException("Hesap kalemi notu guncellenemedi.");
             }
         }
 
@@ -149,7 +149,7 @@ namespace Rivada.Restaurant.Services
             var item = _billItemRepository.GetBillItemById(billItemId);
             if (item == null)
             {
-                throw new InvalidOperationException("Bill item was not found.");
+                throw new InvalidOperationException("Hesap kalemi bulunamadi.");
             }
 
             return item;

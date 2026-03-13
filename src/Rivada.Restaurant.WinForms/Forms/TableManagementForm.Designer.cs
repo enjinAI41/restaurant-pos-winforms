@@ -48,7 +48,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.MinimumSize = new Size(1024, 680);
             this.Name = "TableManagementForm";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = "Rivada Restaurant - Table Management";
+            this.Text = "Rivada Restaurant - Masa Yonetimi";
 
             this.pnlTopBar.BackColor = Color.White;
             this.pnlTopBar.Dock = DockStyle.Top;
@@ -59,27 +59,27 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblWelcome.Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblWelcome.ForeColor = Color.FromArgb(15, 23, 42);
             this.lblWelcome.Location = new Point(24, 18);
-            this.lblWelcome.Text = "Welcome";
+            this.lblWelcome.Text = "Hos geldiniz";
 
             this.lblRole.AutoSize = true;
             this.lblRole.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
             this.lblRole.ForeColor = Color.FromArgb(100, 116, 139);
             this.lblRole.Location = new Point(26, 50);
-            this.lblRole.Text = "Role";
+            this.lblRole.Text = "Rol";
 
-            ConfigureTopButton(this.btnProducts, "Products", 720);
+            ConfigureTopButton(this.btnProducts, "Urunler", 720);
             this.btnProducts.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnProducts.Click += new EventHandler(this.btnProducts_Click);
 
-            ConfigureTopButton(this.btnPayment, "Cash / Payment", 835);
+            ConfigureTopButton(this.btnPayment, "Kasa / Odeme", 835);
             this.btnPayment.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnPayment.Click += new EventHandler(this.btnPayment_Click);
 
-            ConfigureTopButton(this.btnRefresh, "Refresh", 970);
+            ConfigureTopButton(this.btnRefresh, "Yenile", 970);
             this.btnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnRefresh.Click += new EventHandler(this.btnRefresh_Click);
 
-            ConfigureTopButton(this.btnLogout, "Logout", 1080, true);
+            ConfigureTopButton(this.btnLogout, "Cikis", 1080, true);
             this.btnLogout.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnLogout.Click += new EventHandler(this.btnLogout_Click);
 
