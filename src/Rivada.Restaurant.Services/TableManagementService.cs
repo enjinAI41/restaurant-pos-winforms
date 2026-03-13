@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Data.Sqlite;
+using Rivada.Restaurant.Data.Repositories;
+using Rivada.Restaurant.Services.Interfaces;
+using Rivada.Restaurant.Services.Models;
+
+namespace Rivada.Restaurant.Services
+{
+    public class TableManagementService : ITableManagementService
+    {
+        private readonly RestaurantTableRepository _tableRepository;
+        private readonly BillRepository _billRepository;
+
+        public TableManagementService(RestaurantTableRepository tableRepository, BillRepository billRepository)
+        {
+            _tableRepository = tableRepository ?? throw new ArgumentNullException(nameof(tableRepository));
+            _billRepository = billRepository ?? throw new ArgumentNullException(nameof(billRepository));
+        }
+
+        public List<TableDisplayItem> GetTableDisplayItems()
+        {
+            var tables = _tableRepository.GetAllTables();
+            var openBillsByTable = _billRepository.GetAllOpenBillsByTableId();
+            var items = new List<TableDisplayItem>(tables.Count);
+
+            foreach (var table in tables)
+            {
+                openBillsByTable.TryGetValue(table.Id, out var openBill);
+                items.Add(new TableDisplayItem
+                {
+                    TableId = table.Id,
+                    TableName = table.Name,
+                    IsOccupied = openBill != null,
+                    OpenBillId = openBill?.Id,
+                    CurrentTotalAmount = openBill?.TotalAmount ?? 0
+                });
+            }
+
+            return items;
+        }
+
+        public int GetOrCreateOpenBillId(int tableId, int userId)
+        {
+            if (tableId <= 0)
+            {
+                throw new InvalidOperationException("Invalid table selection.");
+            }
+
+            if (userId <= 0)
+            {
+                throw new InvalidOperationException("Invalid user session.");
+            }
+
+            var openBill = _billRepository.GetOpenBillByTableId(tableId);
+            if (openBill != null)
+            {
+                return openBill.Id;
+            }
+
+            try
+            {
+                return _billRepository.CreateBill(tableId, userId);
+            }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+            {
+                var existingOpenBill = _billRepository.GetOpenBillByTableId(tableId);
+                if (existingOpenBill != null)
+                {
+                    return existingOpenBill.Id;
+                }
+
+                throw new InvalidOperationException("Failed to create bill for the selected table.", ex);
+            }
+        }
+    }
+}
