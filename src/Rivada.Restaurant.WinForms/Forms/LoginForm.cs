@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Rivada.Restaurant.Models;
 using Rivada.Restaurant.Services.Interfaces;
+using Rivada.Restaurant.WinForms.Infrastructure;
 
 namespace Rivada.Restaurant.WinForms.Forms
 {
@@ -51,12 +52,25 @@ namespace Rivada.Restaurant.WinForms.Forms
                 return;
             }
 
-            var services = AppComposition.Create();
-            _authService = services.AuthService;
-            _tableManagementService = services.TableManagementService;
-            _orderService = services.OrderService;
-            _paymentService = services.PaymentService;
-            _productManagementService = services.ProductManagementService;
+            try
+            {
+                var services = AppComposition.Create();
+                _authService = services.AuthService;
+                _tableManagementService = services.TableManagementService;
+                _orderService = services.OrderService;
+                _paymentService = services.PaymentService;
+                _productManagementService = services.ProductManagementService;
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Uygulama servisleri baslatilamadi.",
+                    ex,
+                    "LoginForm.TryInitializeRuntimeServices",
+                    "Baslatma Hatasi");
+                btnLogin.Enabled = false;
+            }
         }
 
         private void btnLogin_Click(object? sender, EventArgs e)
@@ -69,7 +83,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 {
                     MessageBox.Show(
-                        "Kullanici adi ve sifre zorunludur.",
+                        "Kullanici adi ve sifre bos birakilamaz.",
                         "Dogrulama",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
@@ -90,7 +104,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 if (loggedInUser == null)
                 {
                     MessageBox.Show(
-                        "Kullanici adi veya sifre hatali.",
+                        "Giris basarisiz. Kullanici bilgilerinizi kontrol edin.",
                         "Giris Basarisiz",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
@@ -101,13 +115,21 @@ namespace Rivada.Restaurant.WinForms.Forms
 
                 OpenTableManagementForm(loggedInUser);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 MessageBox.Show(
-                    $"Giris sirasinda beklenmeyen bir hata olustu.\n\n{ex.Message}",
-                    "Hata",
+                    ex.Message,
+                    "Islem Hatasi",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Giris islemi sirasinda beklenmeyen bir hata olustu.",
+                    ex,
+                    "LoginForm.btnLogin_Click");
             }
         }
 
@@ -121,22 +143,33 @@ namespace Rivada.Restaurant.WinForms.Forms
             if (_tableManagementService == null || _orderService == null || _paymentService == null || _productManagementService == null)
             {
                 MessageBox.Show(
-                    "Uygulama servisleri yapilandirilmamis.",
+                    "Uygulama servisleri hazir degil. Lutfen uygulamayi yeniden baslatin.",
                     "Yapilandirma Hatasi",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return;
             }
 
-            var tableManagementForm = new TableManagementForm(
-                loggedInUser,
-                _tableManagementService,
-                _orderService,
-                _paymentService,
-                _productManagementService);
-            tableManagementForm.FormClosed += (_, __) => Close();
-            Hide();
-            tableManagementForm.Show();
+            try
+            {
+                var tableManagementForm = new TableManagementForm(
+                    loggedInUser,
+                    _tableManagementService,
+                    _orderService,
+                    _paymentService,
+                    _productManagementService);
+                tableManagementForm.FormClosed += (_, __) => Close();
+                Hide();
+                tableManagementForm.Show();
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Masa yonetim ekrani acilamadi.",
+                    ex,
+                    "LoginForm.OpenTableManagementForm");
+            }
         }
 
         private void LoginForm_Resize(object? sender, EventArgs e)

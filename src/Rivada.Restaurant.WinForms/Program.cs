@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Rivada.Restaurant.WinForms.Forms;
+using Rivada.Restaurant.WinForms.Infrastructure;
 
 namespace Rivada.Restaurant.WinForms
 {
@@ -13,7 +14,23 @@ namespace Rivada.Restaurant.WinForms
             ApplicationConfiguration.Initialize();
             RegisterGlobalExceptionHandlers();
 
-            Application.Run(CreateLoginForm());
+            LoginForm loginForm;
+            try
+            {
+                loginForm = CreateLoginForm();
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    owner: null,
+                    userMessage: "Uygulama baslatilamadi. Veritabani veya servisler hazir degil.",
+                    ex: ex,
+                    context: "Program.Main.CreateLoginForm",
+                    title: "Baslatma Hatasi");
+                return;
+            }
+
+            Application.Run(loginForm);
         }
 
         private static LoginForm CreateLoginForm()
@@ -54,11 +71,12 @@ namespace Rivada.Restaurant.WinForms
 
         private static void ShowFatalError(Exception ex)
         {
-            MessageBox.Show(
-                $"Beklenmeyen bir hata olustu.\n\n{ex.Message}",
-                "Uygulama Hatasi",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            AppDiagnostics.ShowError(
+                owner: null,
+                userMessage: "Beklenmeyen bir uygulama hatasi olustu.",
+                ex: ex,
+                context: "Program.ShowFatalError",
+                title: "Uygulama Hatasi");
         }
     }
 }

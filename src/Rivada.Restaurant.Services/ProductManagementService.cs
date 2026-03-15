@@ -20,9 +20,76 @@ namespace Rivada.Restaurant.Services
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         }
 
-        public List<Category> GetCategories()
+        public List<Category> GetCategories(bool onlyActive = true)
         {
-            return _categoryRepository.GetAllCategories();
+            return _categoryRepository.GetAllCategories(onlyActive);
+        }
+
+        public void AddCategory(string name, bool isActive)
+        {
+            ValidateCategoryInput(name);
+            try
+            {
+                _categoryRepository.AddCategory(new Category
+                {
+                    Name = name.Trim(),
+                    IsActive = isActive
+                });
+            }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+            {
+                throw new InvalidOperationException("Aynı isimde kategori zaten var.", ex);
+            }
+        }
+
+        public void UpdateCategory(int categoryId, string name, bool isActive)
+        {
+            if (categoryId <= 0)
+            {
+                throw new InvalidOperationException("Güncellenecek kategori seçilmedi.");
+            }
+
+            ValidateCategoryInput(name);
+            EnsureCategoryExists(categoryId);
+
+            try
+            {
+                var updated = _categoryRepository.UpdateCategory(new Category
+                {
+                    Id = categoryId,
+                    Name = name.Trim(),
+                    IsActive = isActive
+                });
+
+                if (!updated)
+                {
+                    throw new InvalidOperationException("Kategori güncellenemedi.");
+                }
+            }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+            {
+                throw new InvalidOperationException("Aynı isimde kategori zaten var.", ex);
+            }
+        }
+
+        public void SetCategoryActive(int categoryId, bool isActive)
+        {
+            if (categoryId <= 0)
+            {
+                throw new InvalidOperationException("Güncellenecek kategori seçilmedi.");
+            }
+
+            EnsureCategoryExists(categoryId);
+            if (!isActive && _productRepository.CountActiveProductsByCategory(categoryId) > 0)
+            {
+                throw new InvalidOperationException("Bu kategoride aktif ürün var. Önce ürünleri pasif yapın veya taşıyın.");
+            }
+
+            var updated = _categoryRepository.SetCategoryActive(categoryId, isActive);
+            if (!updated)
+            {
+                throw new InvalidOperationException("Kategori durumu güncellenemedi.");
+            }
         }
 
         public List<ProductListItem> GetProducts()
@@ -32,7 +99,8 @@ namespace Rivada.Restaurant.Services
 
             var products = _productRepository.GetAllProducts();
             return products
-                .OrderBy(x => x.Name)
+                .OrderBy(x => categoryMap.TryGetValue(x.CategoryId, out var categoryName) ? categoryName : "Bilinmiyor")
+                .ThenBy(x => x.Name)
                 .Select(x => new ProductListItem
                 {
                     Id = x.Id,
@@ -48,37 +116,54 @@ namespace Rivada.Restaurant.Services
         public void AddProduct(string name, int categoryId, decimal price, bool isActive)
         {
             ValidateInput(name, categoryId, price);
+            EnsureCategoryExists(categoryId);
 
-            _productRepository.AddProduct(new Product
+            try
             {
-                Name = name.Trim(),
-                CategoryId = categoryId,
-                Price = price,
-                IsActive = isActive
-            });
+                _productRepository.AddProduct(new Product
+                {
+                    Name = name.Trim(),
+                    CategoryId = categoryId,
+                    Price = price,
+                    IsActive = isActive
+                });
+            }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+            {
+                throw new InvalidOperationException("Aynı kategori altında aynı isimde ürün zaten var.", ex);
+            }
         }
 
         public void UpdateProduct(int productId, string name, int categoryId, decimal price, bool isActive)
         {
             if (productId <= 0)
             {
-                throw new InvalidOperationException("Guncellemek icin gecerli bir urun secin.");
+                throw new InvalidOperationException("Güncellenecek ürün seçilmedi.");
             }
 
             ValidateInput(name, categoryId, price);
+            EnsureCategoryExists(categoryId);
+            EnsureProductExists(productId);
 
-            var updated = _productRepository.UpdateProduct(new Product
+            try
             {
-                Id = productId,
-                Name = name.Trim(),
-                CategoryId = categoryId,
-                Price = price,
-                IsActive = isActive
-            });
+                var updated = _productRepository.UpdateProduct(new Product
+                {
+                    Id = productId,
+                    Name = name.Trim(),
+                    CategoryId = categoryId,
+                    Price = price,
+                    IsActive = isActive
+                });
 
-            if (!updated)
+                if (!updated)
+                {
+                    throw new InvalidOperationException("Ürün güncellenemedi.");
+                }
+            }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
             {
-                throw new InvalidOperationException("Urun guncellenemedi.");
+                throw new InvalidOperationException("Aynı kategori altında aynı isimde ürün zaten var.", ex);
             }
         }
 
@@ -86,13 +171,15 @@ namespace Rivada.Restaurant.Services
         {
             if (productId <= 0)
             {
-                throw new InvalidOperationException("Once gecerli bir urun secin.");
+                throw new InvalidOperationException("Güncellenecek ürün seçilmedi.");
             }
+
+            EnsureProductExists(productId);
 
             var updated = _productRepository.SetProductInactive(productId);
             if (!updated)
             {
-                throw new InvalidOperationException("Urun pasif olarak isaretlenemedi.");
+                throw new InvalidOperationException("Ürün pasif duruma alınamadı.");
             }
         }
 
@@ -100,20 +187,21 @@ namespace Rivada.Restaurant.Services
         {
             if (productId <= 0)
             {
-                throw new InvalidOperationException("Once gecerli bir urun secin.");
+                throw new InvalidOperationException("Güncellenecek ürün seçilmedi.");
             }
 
+            EnsureProductExists(productId);
             try
             {
                 var deleted = _productRepository.DeleteProduct(productId);
                 if (!deleted)
                 {
-                    throw new InvalidOperationException("Urun silinemedi.");
+                    throw new InvalidOperationException("Ürün silinemedi.");
                 }
             }
             catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
             {
-                throw new InvalidOperationException("Urun hesap gecmisinde kullaniliyor. Silmek yerine pasif yapin.", ex);
+                throw new InvalidOperationException("Ürün geçmiş siparişlerde kullanıldığı için silinemez. Pasife almayı deneyin.", ex);
             }
         }
 
@@ -121,17 +209,43 @@ namespace Rivada.Restaurant.Services
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new InvalidOperationException("Urun adi zorunludur.");
+                throw new InvalidOperationException("Ürün adı boş bırakılamaz.");
             }
 
             if (categoryId <= 0)
             {
-                throw new InvalidOperationException("Kategori zorunludur.");
+                throw new InvalidOperationException("Lütfen bir kategori seçin.");
             }
 
             if (price <= 0)
             {
-                throw new InvalidOperationException("Fiyat sifirdan buyuk olmalidir.");
+                throw new InvalidOperationException("Fiyat sıfırdan büyük olmalıdır.");
+            }
+        }
+
+        private static void ValidateCategoryInput(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new InvalidOperationException("Kategori adı boş bırakılamaz.");
+            }
+        }
+
+        private void EnsureCategoryExists(int categoryId)
+        {
+            var category = _categoryRepository.GetCategoryById(categoryId);
+            if (category == null)
+            {
+                throw new InvalidOperationException("Lütfen bir kategori seçin.");
+            }
+        }
+
+        private void EnsureProductExists(int productId)
+        {
+            var product = _productRepository.GetProductById(productId);
+            if (product == null)
+            {
+                throw new InvalidOperationException("Güncellenecek ürün seçilmedi.");
             }
         }
     }

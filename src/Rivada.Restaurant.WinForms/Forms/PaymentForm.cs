@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Rivada.Restaurant.Models;
 using Rivada.Restaurant.Services.Interfaces;
+using Rivada.Restaurant.WinForms.Infrastructure;
 
 namespace Rivada.Restaurant.WinForms.Forms
 {
@@ -15,6 +16,7 @@ namespace Rivada.Restaurant.WinForms.Forms
         private readonly string _tableName;
         private readonly IPaymentService? _paymentService;
         private bool _isProcessingPayment;
+        private bool _isResettingTable;
 
         public PaymentForm(User user)
             : this(user, null, null, null, null)
@@ -86,17 +88,34 @@ namespace Rivada.Restaurant.WinForms.Forms
             if (!_billId.HasValue)
             {
                 btnCompletePayment.Enabled = false;
+                btnPaymentDone.Enabled = false;
+                btnResetTable.Enabled = false;
                 MessageBox.Show(
-                    "Lutfen odemeyi siparis/hesap ekranindan acin.",
+                    "Aktif adisyon bulunamadı.",
                     "Hesap Yok",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 return;
             }
 
+            if (_billId.Value <= 0 || !_tableId.HasValue || _tableId.Value <= 0)
+            {
+                btnCompletePayment.Enabled = false;
+                btnPaymentDone.Enabled = false;
+                btnResetTable.Enabled = false;
+                MessageBox.Show(
+                    "Geçerli bir masa bulunamadı.",
+                    "Dogrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
             if (_paymentService == null)
             {
                 btnCompletePayment.Enabled = false;
+                btnPaymentDone.Enabled = false;
+                btnResetTable.Enabled = false;
                 MessageBox.Show(
                     "Odeme servisi yapilandirilmamis.",
                     "Yapilandirma Hatasi",
@@ -124,14 +143,24 @@ namespace Rivada.Restaurant.WinForms.Forms
                 lblSubtotalValue.Text = viewData.Subtotal.ToString("C2", CultureInfo.CurrentCulture);
                 lblTotalValue.Text = viewData.Total.ToString("C2", CultureInfo.CurrentCulture);
                 txtReceiptPreview.Text = viewData.ReceiptPreview;
+                btnPaymentDone.Enabled = true;
+                btnResetTable.Enabled = true;
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Islem Hatasi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Odeme verileri yuklenemedi.\n\n{ex.Message}",
-                    "Hata",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                AppDiagnostics.ShowError(
+                    this,
+                    "Odeme verileri yuklenemedi.",
+                    ex,
+                    "PaymentForm.LoadPaymentDataAsync");
             }
             finally
             {
@@ -140,6 +169,89 @@ namespace Rivada.Restaurant.WinForms.Forms
         }
 
         private async void btnCompletePayment_Click(object? sender, EventArgs e)
+        {
+            await CompletePaymentAsync();
+        }
+
+        private async void btnPaymentDone_Click(object? sender, EventArgs e)
+        {
+            await CompletePaymentAsync();
+        }
+
+        private async void btnResetTable_Click(object? sender, EventArgs e)
+        {
+            if (_isResettingTable)
+            {
+                return;
+            }
+
+            if (!_tableId.HasValue || _paymentService == null)
+            {
+                MessageBox.Show(
+                    "Geçerli bir masa bulunamadı.",
+                    "Doğrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var confirm = MessageBox.Show(
+                "Bu masa sıfırlansın mı?",
+                "Onay",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                _isResettingTable = true;
+                btnResetTable.Enabled = false;
+                btnCompletePayment.Enabled = false;
+                btnPaymentDone.Enabled = false;
+                UseWaitCursor = true;
+
+                var result = await Task.Run(() => _paymentService.ResetTable(_tableId.Value));
+                if (!result.Success)
+                {
+                    MessageBox.Show(
+                        result.Message,
+                        "İşlem Hatası",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                MessageBox.Show(
+                    result.Message,
+                    "Başarılı",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Masa durumu güncellenemedi.",
+                    ex,
+                    "PaymentForm.btnResetTable_Click");
+            }
+            finally
+            {
+                UseWaitCursor = false;
+                _isResettingTable = false;
+                btnResetTable.Enabled = true;
+                btnCompletePayment.Enabled = true;
+                btnPaymentDone.Enabled = true;
+            }
+        }
+
+        private async Task CompletePaymentAsync()
         {
             if (_isProcessingPayment)
             {
@@ -155,6 +267,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             {
                 _isProcessingPayment = true;
                 btnCompletePayment.Enabled = false;
+                btnPaymentDone.Enabled = false;
                 UseWaitCursor = true;
 
                 var paymentType = rdoCard.Checked ? PaymentType.Card : PaymentType.Cash;
@@ -180,19 +293,28 @@ namespace Rivada.Restaurant.WinForms.Forms
                 DialogResult = DialogResult.OK;
                 Close();
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 MessageBox.Show(
-                    $"Odeme islemi basarisiz oldu.\n\n{ex.Message}",
-                    "Hata",
+                    ex.Message,
+                    "Islem Hatasi",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Ödeme işlemi tamamlanamadı.",
+                    ex,
+                    "PaymentForm.CompletePaymentAsync");
             }
             finally
             {
                 UseWaitCursor = false;
                 _isProcessingPayment = false;
                 btnCompletePayment.Enabled = true;
+                btnPaymentDone.Enabled = true;
             }
         }
 
@@ -203,3 +325,4 @@ namespace Rivada.Restaurant.WinForms.Forms
         }
     }
 }
+

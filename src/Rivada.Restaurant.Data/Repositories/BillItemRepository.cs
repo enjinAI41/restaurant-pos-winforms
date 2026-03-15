@@ -17,6 +17,16 @@ namespace Rivada.Restaurant.Data.Repositories
 
         public int AddBillItem(BillItem item)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (item.BillId <= 0 || item.ProductId <= 0 || item.Quantity <= 0 || item.UnitPrice < 0 || item.LineTotal < 0)
+            {
+                throw new InvalidOperationException("Gecersiz hesap kalemi bilgisi.");
+            }
+
             using var connection = _databaseHelper.CreateConnection();
             connection.Open();
             using var transaction = connection.BeginTransaction();
@@ -129,6 +139,11 @@ LIMIT 1;";
 
         public bool UpdateBillItemQuantity(int billItemId, int quantity)
         {
+            if (billItemId <= 0 || quantity <= 0)
+            {
+                return false;
+            }
+
             using var connection = _databaseHelper.CreateConnection();
             connection.Open();
             using var transaction = connection.BeginTransaction();
@@ -227,6 +242,70 @@ WHERE Id = @Id;";
             return command.ExecuteNonQuery() > 0;
         }
 
+        public bool MergeBillItems(int sourceBillItemId, int targetBillItemId)
+        {
+            if (sourceBillItemId <= 0 || targetBillItemId <= 0 || sourceBillItemId == targetBillItemId)
+            {
+                return false;
+            }
+
+            using var connection = _databaseHelper.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                var source = GetBillItemByIdInternal(connection, transaction, sourceBillItemId);
+                var target = GetBillItemByIdInternal(connection, transaction, targetBillItemId);
+                if (source == null || target == null)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                if (source.BillId != target.BillId)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                using var updateTarget = connection.CreateCommand();
+                updateTarget.Transaction = transaction;
+                updateTarget.CommandText = @"
+UPDATE BillItems
+SET Quantity = @Quantity,
+    LineTotal = UnitPrice * @Quantity,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Id = @Id;";
+                AddParameter(updateTarget, "@Quantity", target.Quantity + source.Quantity);
+                AddParameter(updateTarget, "@Id", targetBillItemId);
+                if (updateTarget.ExecuteNonQuery() == 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                using var deleteSource = connection.CreateCommand();
+                deleteSource.Transaction = transaction;
+                deleteSource.CommandText = "DELETE FROM BillItems WHERE Id = @Id;";
+                AddParameter(deleteSource, "@Id", sourceBillItemId);
+                if (deleteSource.ExecuteNonQuery() == 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                UpdateBillTotalInternal(connection, transaction, source.BillId);
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
         public List<BillItem> GetBillItemsByBillId(int billId)
         {
             const string sql = @"
@@ -277,6 +356,38 @@ ORDER BY Id;";
             }
 
             return Convert.ToInt32(result);
+        }
+
+        private static BillItem? GetBillItemByIdInternal(SqliteConnection connection, SqliteTransaction transaction, int billItemId)
+        {
+            using var command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = @"
+SELECT Id, BillId, ProductId, ProductNameSnapshot, Quantity, UnitPrice, LineTotal, Note, CreatedAt, UpdatedAt
+FROM BillItems
+WHERE Id = @Id
+LIMIT 1;";
+            AddParameter(command, "@Id", billItemId);
+
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
+            {
+                return null;
+            }
+
+            return new BillItem
+            {
+                Id = reader.GetInt32(0),
+                BillId = reader.GetInt32(1),
+                ProductId = reader.GetInt32(2),
+                ProductNameSnapshot = reader.GetString(3),
+                Quantity = reader.GetInt32(4),
+                UnitPrice = Convert.ToDecimal(reader.GetValue(5)),
+                LineTotal = Convert.ToDecimal(reader.GetValue(6)),
+                Note = reader.IsDBNull(7) ? null : reader.GetString(7),
+                CreatedAt = ToDateTime(reader.GetValue(8)),
+                UpdatedAt = ToDateTime(reader.GetValue(9))
+            };
         }
 
         private static void UpdateBillTotalInternal(SqliteConnection connection, SqliteTransaction transaction, int billId)

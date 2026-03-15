@@ -191,76 +191,147 @@ SET IsActive = CASE
 END,
 UpdatedAt = CURRENT_TIMESTAMP;
 
-INSERT OR IGNORE INTO Categories (Name, IsActive, CreatedAt, UpdatedAt)
+INSERT INTO Categories (Name, IsActive, CreatedAt, UpdatedAt)
 VALUES
-('Icecek', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Yemek', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Tatli', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('MEZELER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('BAŞLANGIÇLAR', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('SALATALAR', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('ANA YEMEKLER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('TAVUK YEMEKLERİ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('MEYVE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('ÇEREZLER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('SOĞUK & SICAK İÇECEKLER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('BİRALAR (50cl)', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('ŞARAPLAR 37.5cl', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('ŞARAPLAR 75cl', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('VOTKA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('VİSKİ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('RAKILAR', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+ON CONFLICT(Name) DO UPDATE SET
+    IsActive = excluded.IsActive,
+    UpdatedAt = CURRENT_TIMESTAMP;
 
 UPDATE Categories
-SET Name = 'Icecek',
-    IsActive = 1,
+SET IsActive = 0,
     UpdatedAt = CURRENT_TIMESTAMP
-WHERE Name = 'Drink'
-  AND NOT EXISTS (SELECT 1 FROM Categories WHERE Name = 'Icecek');
+WHERE Name IN ('Icecek', 'Yemek', 'Tatli', 'Drink', 'Food', 'Dessert');
 
-UPDATE Categories
-SET Name = 'Yemek',
+INSERT INTO Products (CategoryId, Name, Price, IsActive, CreatedAt, UpdatedAt)
+SELECT
+    categories.Id,
+    data.column2,
+    data.column3,
+    1,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+FROM (
+    VALUES
+    ('MEZELER', 'Beyaz Peynir', 150),
+    ('MEZELER', 'Haydari', 200),
+    ('MEZELER', 'Acılı Meze', 200),
+    ('MEZELER', 'Köpoğlu', 200),
+    ('MEZELER', 'Atom', 200),
+    ('MEZELER', 'Rus Salatası', 200),
+    ('MEZELER', 'Pastırmalı Humus', 220),
+    ('MEZELER', 'Şakşuka', 200),
+    ('MEZELER', 'Patlıcan Ezme', 200),
+    ('MEZELER', 'Girit Ezme', 200),
+    ('MEZELER', 'Yaprak Sarma', 200),
+    ('MEZELER', 'Çiğ Köfte', 200),
+    ('MEZELER', 'Havuç Tarator', 200),
+    ('MEZELER', 'Semizotu', 200),
+    ('MEZELER', 'Kuru Cacık', 180),
+    ('BAŞLANGIÇLAR', 'Kavun', 150),
+    ('BAŞLANGIÇLAR', 'Kaşarlı Mantar', 300),
+    ('BAŞLANGIÇLAR', 'Güveçte Sucuk', 300),
+    ('BAŞLANGIÇLAR', 'Yaprak Ciğer', 450),
+    ('BAŞLANGIÇLAR', 'Paçanga Böreği', 280),
+    ('BAŞLANGIÇLAR', 'Sigara Böreği', 200),
+    ('BAŞLANGIÇLAR', 'Söğüş', 100),
+    ('BAŞLANGIÇLAR', 'Patates Tava', 200),
+    ('SALATALAR', 'Mevsim Salata', 220),
+    ('SALATALAR', 'Çoban Salata', 220),
+    ('SALATALAR', 'Kaşık Salata', 220),
+    ('ANA YEMEKLER', 'Rivada Güveç', 800),
+    ('ANA YEMEKLER', 'Kuzu Pirzola', 850),
+    ('ANA YEMEKLER', 'Antrikot', 850),
+    ('ANA YEMEKLER', 'Saç Kavurma', 800),
+    ('ANA YEMEKLER', 'Köfte Izgara', 550),
+    ('ANA YEMEKLER', 'Bonfile', 1000),
+    ('ANA YEMEKLER', 'Et Çökertme', 700),
+    ('TAVUK YEMEKLERİ', 'Tavuk Saç Kavurma', 450),
+    ('TAVUK YEMEKLERİ', 'Köri Soslu Tavuk', 450),
+    ('TAVUK YEMEKLERİ', 'Kremalı Tavuk', 450),
+    ('TAVUK YEMEKLERİ', 'Kremalı Makarna', 450),
+    ('TAVUK YEMEKLERİ', 'Köri Soslu Makarna', 450),
+    ('TAVUK YEMEKLERİ', 'Tavuk Izgara', 450),
+    ('TAVUK YEMEKLERİ', 'Tavuk Schnitzel', 450),
+    ('TAVUK YEMEKLERİ', 'Tavuk Çökertme', 450),
+    ('MEYVE', 'Meyve Tabağı (Küçük)', 180),
+    ('MEYVE', 'Meyve Tabağı (Büyük)', 350),
+    ('MEYVE', 'Serpme Meyve', 400),
+    ('MEYVE', 'Ballı Muz', 250),
+    ('ÇEREZLER', 'Tuzlu Fıstık', 150),
+    ('ÇEREZLER', 'Badem', 250),
+    ('ÇEREZLER', 'Antep Fıstığı', 350),
+    ('ÇEREZLER', 'Lüks Kokteyl', 280),
+    ('ÇEREZLER', 'Çikolata', 150),
+    ('SOĞUK & SICAK İÇECEKLER', 'Cola', 100),
+    ('SOĞUK & SICAK İÇECEKLER', 'Ice Tea', 100),
+    ('SOĞUK & SICAK İÇECEKLER', 'Fanta', 100),
+    ('SOĞUK & SICAK İÇECEKLER', 'Soda', 65),
+    ('SOĞUK & SICAK İÇECEKLER', 'Şalgam (30cl)', 80),
+    ('SOĞUK & SICAK İÇECEKLER', 'Su (0.5 lt)', 20),
+    ('SOĞUK & SICAK İÇECEKLER', 'Su (1.5 lt)', 50),
+    ('SOĞUK & SICAK İÇECEKLER', 'Redbull', 160),
+    ('SOĞUK & SICAK İÇECEKLER', 'Demleme Çay', 25),
+    ('SOĞUK & SICAK İÇECEKLER', 'Türk Kahvesi', 75),
+    ('SOĞUK & SICAK İÇECEKLER', 'Nescafe', 90),
+    ('BİRALAR (50cl)', 'Efes Pilsen', 220),
+    ('BİRALAR (50cl)', 'Tuborg Gold', 220),
+    ('BİRALAR (50cl)', 'Carlsberg', 220),
+    ('BİRALAR (50cl)', 'Bomonti', 230),
+    ('BİRALAR (50cl)', 'Miller', 250),
+    ('BİRALAR (50cl)', 'Tuborg Extra', 240),
+    ('ŞARAPLAR 37.5cl', 'Buzbağ (Öküzgözü-Boğazkere)', 800),
+    ('ŞARAPLAR 75cl', 'Buzbağ', 1300),
+    ('ŞARAPLAR 75cl', 'Terra Roze Kalecik', 1350),
+    ('VOTKA', 'İstanblue 20cl', 750),
+    ('VOTKA', 'İstanblue 35cl', 1200),
+    ('VOTKA', 'İstanblue 50cl', 1600),
+    ('VOTKA', 'İstanblue 70cl', 2000),
+    ('VİSKİ', 'Chivas Regal 12 Years Old 35cl', 2200),
+    ('VİSKİ', 'Chivas Regal 12 Years Old 50cl', 3000),
+    ('VİSKİ', 'Chivas Regal 12 Years Old 70cl', 3900),
+    ('RAKILAR', 'Yeni Rakı 20cl', 850),
+    ('RAKILAR', 'Yeni Rakı 35cl', 1250),
+    ('RAKILAR', 'Yeni Rakı 50cl', 1750),
+    ('RAKILAR', 'Yeni Rakı 70cl', 2250),
+    ('RAKILAR', 'Yeni Rakı 100cl', 2900),
+    ('RAKILAR', 'Efe Gold 20cl', 1050),
+    ('RAKILAR', 'Efe Gold 35cl', 1600),
+    ('RAKILAR', 'Efe Gold 50cl', 2250),
+    ('RAKILAR', 'Efe Gold 70cl', 2800),
+    ('RAKILAR', 'Efe Gold 100cl', 3600),
+    ('RAKILAR', 'Tekirdağ Altın 20cl', 1050),
+    ('RAKILAR', 'Tekirdağ Altın 35cl', 1600),
+    ('RAKILAR', 'Tekirdağ Altın 50cl', 2250),
+    ('RAKILAR', 'Tekirdağ Altın 70cl', 2800),
+    ('RAKILAR', 'Tekirdağ Altın 100cl', 3600),
+    ('RAKILAR', 'Tekirdağ Yaş Üzüm 35cl', 1400),
+    ('RAKILAR', 'Tekirdağ Yaş Üzüm 50cl', 2000),
+    ('RAKILAR', 'Tekirdağ Yaş Üzüm 70cl', 2500),
+    ('RAKILAR', 'Beylerbeyi Göbek 20cl', 1200),
+    ('RAKILAR', 'Beylerbeyi Göbek 35cl', 2000),
+    ('RAKILAR', 'Beylerbeyi Göbek 50cl', 2750),
+    ('RAKILAR', 'Beylerbeyi Göbek 70cl', 3600)
+) AS data
+INNER JOIN Categories categories
+    ON categories.Name = data.column1
+ON CONFLICT(CategoryId, Name) DO UPDATE SET
+    Price = excluded.Price,
     IsActive = 1,
-    UpdatedAt = CURRENT_TIMESTAMP
-WHERE Name = 'Food'
-  AND NOT EXISTS (SELECT 1 FROM Categories WHERE Name = 'Yemek');
-
-UPDATE Categories
-SET Name = 'Tatli',
-    IsActive = 1,
-    UpdatedAt = CURRENT_TIMESTAMP
-WHERE Name = 'Dessert'
-  AND NOT EXISTS (SELECT 1 FROM Categories WHERE Name = 'Tatli');
-
-UPDATE Categories
-SET IsActive = CASE
-    WHEN Name IN ('Icecek', 'Yemek', 'Tatli') THEN 1
-    ELSE 0
-END,
-UpdatedAt = CURRENT_TIMESTAMP;
-
-INSERT OR IGNORE INTO Products (CategoryId, Name, Price, IsActive, CreatedAt, UpdatedAt)
-VALUES
-((SELECT Id FROM Categories WHERE Name = 'Icecek' LIMIT 1), 'Cay', 25.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Categories WHERE Name = 'Icecek' LIMIT 1), 'Kahve', 45.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Categories WHERE Name = 'Yemek' LIMIT 1), 'Cizburger', 220.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-((SELECT Id FROM Categories WHERE Name = 'Tatli' LIMIT 1), 'Baklava', 130.00, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-UPDATE Products
-SET Name = 'Cay',
-    IsActive = 1,
-    UpdatedAt = CURRENT_TIMESTAMP
-WHERE Name = 'Tea'
-  AND NOT EXISTS (
-      SELECT 1 FROM Products p2
-      WHERE p2.CategoryId = Products.CategoryId
-        AND p2.Name = 'Cay');
-
-UPDATE Products
-SET Name = 'Kahve',
-    IsActive = 1,
-    UpdatedAt = CURRENT_TIMESTAMP
-WHERE Name = 'Coffee'
-  AND NOT EXISTS (
-      SELECT 1 FROM Products p2
-      WHERE p2.CategoryId = Products.CategoryId
-        AND p2.Name = 'Kahve');
-
-UPDATE Products
-SET Name = 'Cizburger',
-    IsActive = 1,
-    UpdatedAt = CURRENT_TIMESTAMP
-WHERE Name = 'Cheeseburger'
-  AND NOT EXISTS (
-      SELECT 1 FROM Products p2
-      WHERE p2.CategoryId = Products.CategoryId
-        AND p2.Name = 'Cizburger');
+    UpdatedAt = CURRENT_TIMESTAMP;
 
 UPDATE Users
 SET FullName = CASE Username

@@ -169,6 +169,22 @@ WHERE Id = @Id;";
             return command.ExecuteNonQuery() > 0;
         }
 
+        public int CountActiveProductsByCategory(int categoryId)
+        {
+            const string sql = @"
+SELECT COUNT(1)
+FROM Products
+WHERE CategoryId = @CategoryId AND IsActive = 1;";
+
+            using var connection = _databaseHelper.CreateConnection();
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            AddParameter(command, "@CategoryId", categoryId);
+
+            return Convert.ToInt32(command.ExecuteScalar());
+        }
+
         private static Product MapProduct(SqliteDataReader reader)
         {
             return new Product

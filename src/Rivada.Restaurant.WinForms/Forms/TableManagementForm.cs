@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Rivada.Restaurant.Models;
 using Rivada.Restaurant.Services.Interfaces;
 using Rivada.Restaurant.Services.Models;
+using Rivada.Restaurant.WinForms.Infrastructure;
 
 namespace Rivada.Restaurant.WinForms.Forms
 {
@@ -17,6 +18,7 @@ namespace Rivada.Restaurant.WinForms.Forms
         private readonly IPaymentService _paymentService;
         private readonly IProductManagementService _productManagementService;
         private bool _isOpeningTable;
+        private bool _isResettingTable;
 
         public TableManagementForm(
             User loggedInUser,
@@ -34,6 +36,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             InitializeComponent();
             ConfigureVisualStyle();
             SetUserHeader();
+            ConfigureMenuAccess();
         }
 
         protected override async void OnShown(EventArgs e)
@@ -49,7 +52,21 @@ namespace Rivada.Restaurant.WinForms.Forms
                 : _loggedInUser.FullName;
 
             lblWelcome.Text = $"Kullanici: {fullName}";
-            lblRole.Text = $"Rol ID: {_loggedInUser.RoleId}";
+            var roleName = string.IsNullOrWhiteSpace(_loggedInUser.RoleName)
+                ? $"Rol ID: {_loggedInUser.RoleId}"
+                : _loggedInUser.RoleName;
+
+            lblRole.Text = $"Rol: {roleName}";
+        }
+
+        private void ConfigureMenuAccess()
+        {
+            btnProducts.Visible = IsAdminUser();
+        }
+
+        private bool IsAdminUser()
+        {
+            return string.Equals(_loggedInUser.RoleName, "Admin", StringComparison.OrdinalIgnoreCase);
         }
 
         private void ConfigureVisualStyle()
@@ -70,11 +87,11 @@ namespace Rivada.Restaurant.WinForms.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Masalar yuklenemedi.\n\n{ex.Message}",
-                    "Hata",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                AppDiagnostics.ShowError(
+                    this,
+                    "Masa listesi yuklenemedi.",
+                    ex,
+                    "TableManagementForm.LoadAndRenderTablesAsync");
             }
             finally
             {
@@ -121,6 +138,9 @@ namespace Rivada.Restaurant.WinForms.Forms
             };
             panel.Click += TableCard_Click;
 
+            var contextMenu = CreateTableContextMenu(table);
+            panel.ContextMenuStrip = contextMenu;
+
             var lblName = new Label
             {
                 AutoSize = false,
@@ -133,6 +153,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Tag = table
             };
             lblName.Click += TableCard_Click;
+            lblName.ContextMenuStrip = contextMenu;
 
             var lblStatus = new Label
             {
@@ -146,6 +167,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Tag = table
             };
             lblStatus.Click += TableCard_Click;
+            lblStatus.ContextMenuStrip = contextMenu;
 
             var totalText = isOccupied
                 ? $"Toplam: {table.CurrentTotalAmount:C2}"
@@ -163,6 +185,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Tag = table
             };
             lblTotal.Click += TableCard_Click;
+            lblTotal.ContextMenuStrip = contextMenu;
 
             var lblHint = new Label
             {
@@ -176,12 +199,87 @@ namespace Rivada.Restaurant.WinForms.Forms
                 Tag = table
             };
             lblHint.Click += TableCard_Click;
+            lblHint.ContextMenuStrip = contextMenu;
 
             panel.Controls.Add(lblName);
             panel.Controls.Add(lblStatus);
             panel.Controls.Add(lblTotal);
             panel.Controls.Add(lblHint);
             return panel;
+        }
+
+        private ContextMenuStrip CreateTableContextMenu(TableDisplayItem table)
+        {
+            var menu = new ContextMenuStrip();
+            var resetItem = new ToolStripMenuItem("Masayı Sıfırla");
+            resetItem.Click += async (_, _) => await ResetTableFromContextAsync(table);
+            menu.Items.Add(resetItem);
+            return menu;
+        }
+
+        private async Task ResetTableFromContextAsync(TableDisplayItem table)
+        {
+            if (_isResettingTable)
+            {
+                return;
+            }
+
+            if (table.TableId <= 0)
+            {
+                MessageBox.Show(
+                    "Geçerli bir masa bulunamadı.",
+                    "Doğrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var confirm = MessageBox.Show(
+                $"{table.TableName} masası sıfırlansın mı?",
+                "Onay",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                _isResettingTable = true;
+                UseWaitCursor = true;
+
+                var result = await Task.Run(() => _paymentService.ResetTable(table.TableId));
+                if (!result.Success)
+                {
+                    MessageBox.Show(
+                        result.Message,
+                        "İşlem Hatası",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                MessageBox.Show(
+                    result.Message,
+                    "Başarılı",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Masa durumu güncellenemedi.",
+                    ex,
+                    "TableManagementForm.ResetTableFromContextAsync");
+            }
+            finally
+            {
+                UseWaitCursor = false;
+                _isResettingTable = false;
+                await LoadAndRenderTablesAsync();
+            }
         }
 
         private async void TableCard_Click(object? sender, EventArgs e)
@@ -191,8 +289,23 @@ namespace Rivada.Restaurant.WinForms.Forms
                 return;
             }
 
+            if ((Control.MouseButtons & MouseButtons.Right) == MouseButtons.Right)
+            {
+                return;
+            }
+
             if (sender is not Control control || control.Tag is not TableDisplayItem table)
             {
+                return;
+            }
+
+            if (table.TableId <= 0)
+            {
+                MessageBox.Show(
+                    "Geçerli bir masa bulunamadı.",
+                    "Dogrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
 
@@ -211,13 +324,22 @@ namespace Rivada.Restaurant.WinForms.Forms
                     _paymentService);
                 orderForm.ShowDialog(this);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 MessageBox.Show(
-                    $"Masa acilamadi.\n\n{ex.Message}",
+                    ex.Message,
                     "Islem Hatasi",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Masa acma islemi tamamlanamadi.",
+                    ex,
+                    "TableManagementForm.TableCard_Click",
+                    "Islem Hatasi");
             }
             finally
             {
@@ -229,9 +351,30 @@ namespace Rivada.Restaurant.WinForms.Forms
 
         private async void btnProducts_Click(object? sender, EventArgs e)
         {
-            using var form = new ProductManagementForm(_loggedInUser, _productManagementService);
-            form.ShowDialog(this);
-            await LoadAndRenderTablesAsync();
+            if (!IsAdminUser())
+            {
+                MessageBox.Show(
+                    "Bu işlem için yönetici yetkisi gereklidir.",
+                    "Yetki",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using var form = new ProductManagementForm(_loggedInUser, _productManagementService);
+                form.ShowDialog(this);
+                await LoadAndRenderTablesAsync();
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Menü yönetimi ekranı açılamadı.",
+                    ex,
+                    "TableManagementForm.btnProducts_Click");
+            }
         }
 
         private async void btnPayment_Click(object? sender, EventArgs e)
@@ -255,3 +398,4 @@ namespace Rivada.Restaurant.WinForms.Forms
         }
     }
 }
+

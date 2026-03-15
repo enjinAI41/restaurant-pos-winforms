@@ -16,6 +16,16 @@ namespace Rivada.Restaurant.Data.Repositories
 
         public int CreatePayment(Payment payment)
         {
+            if (payment == null)
+            {
+                throw new ArgumentNullException(nameof(payment));
+            }
+
+            if (payment.BillId <= 0 || payment.PaidByUserId <= 0 || payment.Amount <= 0)
+            {
+                throw new InvalidOperationException("Gecersiz odeme bilgisi.");
+            }
+
             const string sql = @"
 INSERT INTO Payments (BillId, PaymentType, Amount, PaidByUserId, PaidAt, CreatedAt, UpdatedAt)
 VALUES (@BillId, @PaymentType, @Amount, @PaidByUserId, @PaidAt, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -43,6 +53,11 @@ SELECT last_insert_rowid();";
 
         public decimal? CreatePaymentAndCloseBillAtomic(int billId, int paidByUserId, PaymentType paymentType)
         {
+            if (billId <= 0 || paidByUserId <= 0)
+            {
+                return null;
+            }
+
             using var connection = _databaseHelper.CreateConnection();
             connection.Open();
             using var transaction = connection.BeginTransaction();
@@ -56,7 +71,7 @@ SELECT last_insert_rowid();";
                     return null;
                 }
 
-                if (billState.Value.TotalAmount <= 0)
+                if (billState.Value.ItemCount <= 0)
                 {
                     transaction.Rollback();
                     return null;
@@ -105,7 +120,11 @@ SET Status = @Status,
 WHERE Id = @TableId;";
                 AddParameter(tableCommand, "@Status", (int)TableStatus.Empty);
                 AddParameter(tableCommand, "@TableId", billState.Value.TableId);
-                tableCommand.ExecuteNonQuery();
+                if (tableCommand.ExecuteNonQuery() == 0)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException("Masa durumu güncellenemedi.");
+                }
 
                 transaction.Commit();
                 return billState.Value.TotalAmount;
@@ -122,13 +141,14 @@ WHERE Id = @TableId;";
             }
         }
 
-        private static (int TableId, decimal TotalAmount)? GetOpenBillState(SqliteConnection connection, SqliteTransaction transaction, int billId)
+        private static (int TableId, decimal TotalAmount, int ItemCount)? GetOpenBillState(SqliteConnection connection, SqliteTransaction transaction, int billId)
         {
             using var command = connection.CreateCommand();
             command.Transaction = transaction;
             command.CommandText = @"
 SELECT b.TableId,
-       COALESCE(SUM(bi.LineTotal), 0) AS CalculatedTotal
+       COALESCE(SUM(bi.LineTotal), 0) AS CalculatedTotal,
+       COUNT(bi.Id) AS ItemCount
 FROM Bills b
 LEFT JOIN BillItems bi ON bi.BillId = b.Id
 WHERE b.Id = @BillId
@@ -146,7 +166,9 @@ LIMIT 1;";
 
             var tableId = reader.GetInt32(0);
             var totalAmount = Convert.ToDecimal(reader.GetValue(1));
-            return (tableId, totalAmount);
+            var itemCount = reader.GetInt32(2);
+            return (tableId, totalAmount, itemCount);
         }
     }
 }
+

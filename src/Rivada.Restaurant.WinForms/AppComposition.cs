@@ -21,29 +21,48 @@ namespace Rivada.Restaurant.WinForms
     {
         public static AppServices Create()
         {
-            var databasePath = Path.Combine(AppContext.BaseDirectory, "restaurant.db");
-            var dbHelper = new SqliteDatabaseHelper(databasePath);
-            var initializer = new DatabaseInitializer(dbHelper);
-            initializer.Initialize();
-
-            ValidateDatabaseState(dbHelper);
-
-            var userRepository = new UserRepository(dbHelper);
-            var tableRepository = new RestaurantTableRepository(dbHelper);
-            var billRepository = new BillRepository(dbHelper);
-            var categoryRepository = new CategoryRepository(dbHelper);
-            var productRepository = new ProductRepository(dbHelper);
-            var billItemRepository = new BillItemRepository(dbHelper);
-            var paymentRepository = new PaymentRepository(dbHelper);
-
-            return new AppServices
+            try
             {
-                AuthService = new AuthService(userRepository),
-                TableManagementService = new TableManagementService(tableRepository, billRepository),
-                OrderService = new OrderService(categoryRepository, productRepository, billItemRepository),
-                PaymentService = new PaymentService(billItemRepository, paymentRepository),
-                ProductManagementService = new ProductManagementService(productRepository, categoryRepository)
-            };
+                var databasePath = Path.Combine(AppContext.BaseDirectory, "restaurant.db");
+                var dbHelper = new SqliteDatabaseHelper(databasePath);
+                var initializer = new DatabaseInitializer(dbHelper);
+                initializer.Initialize();
+
+                ValidateDatabaseState(dbHelper);
+
+                var userRepository = new UserRepository(dbHelper);
+                var tableRepository = new RestaurantTableRepository(dbHelper);
+                var billRepository = new BillRepository(dbHelper);
+                var categoryRepository = new CategoryRepository(dbHelper);
+                var productRepository = new ProductRepository(dbHelper);
+                var billItemRepository = new BillItemRepository(dbHelper);
+                var paymentRepository = new PaymentRepository(dbHelper);
+
+                return new AppServices
+                {
+                    AuthService = new AuthService(userRepository),
+                    TableManagementService = new TableManagementService(tableRepository, billRepository),
+                    OrderService = new OrderService(categoryRepository, productRepository, billItemRepository, billRepository),
+                    PaymentService = new PaymentService(billItemRepository, paymentRepository, billRepository, tableRepository),
+                    ProductManagementService = new ProductManagementService(productRepository, categoryRepository)
+                };
+            }
+            catch (IOException ex)
+            {
+                throw new InvalidOperationException("Veritabani dosyasina erisim saglanamadi.", ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new InvalidOperationException("Veritabani klasorune yazma izni yok.", ex);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidOperationException("Veritabani yolu gecersiz.", ex);
+            }
+            catch (SqliteException ex)
+            {
+                throw new InvalidOperationException("Veritabani baslatilirken bir SQLite hatasi olustu.", ex);
+            }
         }
 
         private static void ValidateDatabaseState(SqliteDatabaseHelper dbHelper)

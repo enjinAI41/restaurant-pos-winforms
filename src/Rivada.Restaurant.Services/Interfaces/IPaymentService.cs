@@ -7,5 +7,6 @@ namespace Rivada.Restaurant.Services.Interfaces
     {
         PaymentViewData GetPaymentViewData(int billId, string tableName);
         PaymentCompletionResult CompletePayment(int billId, int paidByUserId, PaymentType paymentType);
+        PaymentCompletionResult ResetTable(int tableId);
     }
 }

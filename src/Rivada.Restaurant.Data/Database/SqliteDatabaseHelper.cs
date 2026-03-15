@@ -33,7 +33,14 @@ namespace Rivada.Restaurant.Data.Database
 
         public SqliteConnection CreateConnection()
         {
-            return new SqliteConnection(_connectionString);
+            try
+            {
+                return new SqliteConnection(_connectionString);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Veritabani baglantisi olusturulamadi.", ex);
+            }
         }
     }
 }

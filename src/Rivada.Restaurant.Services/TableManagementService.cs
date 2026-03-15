@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
+using Rivada.Restaurant.Models;
 using Rivada.Restaurant.Data.Repositories;
 using Rivada.Restaurant.Services.Interfaces;
 using Rivada.Restaurant.Services.Models;
@@ -27,11 +28,18 @@ namespace Rivada.Restaurant.Services
             foreach (var table in tables)
             {
                 openBillsByTable.TryGetValue(table.Id, out var openBill);
+                var isOccupied = openBill != null;
+                var expectedStatus = isOccupied ? TableStatus.Occupied : TableStatus.Empty;
+                if (table.Status != expectedStatus)
+                {
+                    _tableRepository.UpdateTableStatus(table.Id, (int)expectedStatus);
+                }
+
                 items.Add(new TableDisplayItem
                 {
                     TableId = table.Id,
                     TableName = table.Name,
-                    IsOccupied = openBill != null,
+                    IsOccupied = isOccupied,
                     OpenBillId = openBill?.Id,
                     CurrentTotalAmount = openBill?.TotalAmount ?? 0
                 });
@@ -44,12 +52,18 @@ namespace Rivada.Restaurant.Services
         {
             if (tableId <= 0)
             {
-                throw new InvalidOperationException("Gecersiz masa secimi.");
+                throw new InvalidOperationException("Geçerli bir masa bulunamadı.");
             }
 
             if (userId <= 0)
             {
                 throw new InvalidOperationException("Gecersiz kullanici oturumu.");
+            }
+
+            var table = _tableRepository.GetTableById(tableId);
+            if (table == null || !table.IsActive)
+            {
+                throw new InvalidOperationException("Geçerli bir masa bulunamadı.");
             }
 
             var openBill = _billRepository.GetOpenBillByTableId(tableId);
@@ -70,8 +84,9 @@ namespace Rivada.Restaurant.Services
                     return existingOpenBill.Id;
                 }
 
-                throw new InvalidOperationException("Secilen masa icin hesap olusturulamadi.", ex);
+                throw new InvalidOperationException("Bu masa için zaten açık bir adisyon var.", ex);
             }
         }
     }
 }
+

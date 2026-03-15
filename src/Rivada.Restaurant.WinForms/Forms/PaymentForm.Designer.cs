@@ -21,7 +21,9 @@ namespace Rivada.Restaurant.WinForms.Forms
         private Label lblSubtotalValue = null!;
         private Label lblTotalTitle = null!;
         private Label lblTotalValue = null!;
+        private Button btnPaymentDone = null!;
         private Button btnCompletePayment = null!;
+        private Button btnResetTable = null!;
         private Button btnCancel = null!;
         private GroupBox grpReceipt = null!;
         private TextBox txtReceiptPreview = null!;
@@ -51,7 +53,9 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblSubtotalValue = new Label();
             this.lblTotalTitle = new Label();
             this.lblTotalValue = new Label();
+            this.btnPaymentDone = new Button();
             this.btnCompletePayment = new Button();
+            this.btnResetTable = new Button();
             this.btnCancel = new Button();
             this.grpReceipt = new GroupBox();
             this.txtReceiptPreview = new TextBox();
@@ -158,8 +162,19 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTotalValue.Location = new Point(389, 63);
             this.lblTotalValue.Text = "0.00";
 
+            this.btnPaymentDone.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            this.btnPaymentDone.Location = new Point(500, 56);
+            this.btnPaymentDone.Size = new Size(150, 34);
+            this.btnPaymentDone.Text = "Ödemeyi Yaptı";
+            this.btnPaymentDone.FlatStyle = FlatStyle.Flat;
+            this.btnPaymentDone.FlatAppearance.BorderSize = 0;
+            this.btnPaymentDone.BackColor = Color.FromArgb(15, 118, 110);
+            this.btnPaymentDone.ForeColor = Color.White;
+            this.btnPaymentDone.Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnPaymentDone.Click += new EventHandler(this.btnPaymentDone_Click);
+
             this.btnCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            this.btnCancel.Location = new Point(836, 42);
+            this.btnCancel.Location = new Point(694, 42);
             this.btnCancel.Size = new Size(130, 42);
             this.btnCancel.Text = "Iptal";
             this.btnCancel.FlatStyle = FlatStyle.Flat;
@@ -168,6 +183,17 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.btnCancel.ForeColor = Color.FromArgb(15, 23, 42);
             this.btnCancel.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
+
+            this.btnResetTable.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.btnResetTable.Location = new Point(836, 42);
+            this.btnResetTable.Size = new Size(130, 42);
+            this.btnResetTable.Text = "Masayı Sıfırla";
+            this.btnResetTable.FlatStyle = FlatStyle.Flat;
+            this.btnResetTable.FlatAppearance.BorderSize = 0;
+            this.btnResetTable.BackColor = Color.FromArgb(30, 64, 175);
+            this.btnResetTable.ForeColor = Color.White;
+            this.btnResetTable.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnResetTable.Click += new EventHandler(this.btnResetTable_Click);
 
             this.btnCompletePayment.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnCompletePayment.Location = new Point(976, 42);
@@ -192,7 +218,9 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.pnlBottom.Controls.Add(this.lblSubtotalValue);
             this.pnlBottom.Controls.Add(this.lblTotalTitle);
             this.pnlBottom.Controls.Add(this.lblTotalValue);
+            this.pnlBottom.Controls.Add(this.btnPaymentDone);
             this.pnlBottom.Controls.Add(this.btnCancel);
+            this.pnlBottom.Controls.Add(this.btnResetTable);
             this.pnlBottom.Controls.Add(this.btnCompletePayment);
 
             this.Controls.Add(this.dgvBillItems);

@@ -67,8 +67,9 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblRole.Location = new Point(26, 50);
             this.lblRole.Text = "Rol";
 
-            ConfigureTopButton(this.btnProducts, "Urunler", 720);
-            this.btnProducts.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ConfigureTopButton(this.btnProducts, "Menü Düzenle", 320);
+            this.btnProducts.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            this.btnProducts.Size = new Size(128, 38);
             this.btnProducts.Click += new EventHandler(this.btnProducts_Click);
 
             ConfigureTopButton(this.btnPayment, "Kasa / Odeme", 835);

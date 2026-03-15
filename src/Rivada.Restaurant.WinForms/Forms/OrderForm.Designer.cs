@@ -24,6 +24,7 @@ namespace Rivada.Restaurant.WinForms.Forms
         private Label lblSubtotalValue = null!;
         private Label lblTotalValue = null!;
         private Button btnBack = null!;
+        private Button btnResetTable = null!;
         private Button btnProceedPayment = null!;
 
         protected override void Dispose(bool disposing)
@@ -54,6 +55,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTotalTitle = new Label();
             this.lblTotalValue = new Label();
             this.btnBack = new Button();
+            this.btnResetTable = new Button();
             this.btnProceedPayment = new Button();
             this.pnlTop.SuspendLayout();
             this.tlpMain.SuspendLayout();
@@ -168,6 +170,12 @@ namespace Rivada.Restaurant.WinForms.Forms
             ConfigureFooterButton(this.btnBack, "Geri", 980, false);
             this.btnBack.Click += new EventHandler(this.btnBack_Click);
 
+            ConfigureFooterButton(this.btnResetTable, "Masayi Sifirla", 1080, false);
+            this.btnResetTable.Size = new Size(145, 44);
+            this.btnResetTable.BackColor = Color.FromArgb(30, 64, 175);
+            this.btnResetTable.ForeColor = Color.White;
+            this.btnResetTable.Click += new EventHandler(this.btnResetTable_Click);
+
             ConfigureFooterButton(this.btnProceedPayment, "Odemeye Gec", 1110, true);
             this.btnProceedPayment.Size = new Size(230, 44);
             this.btnProceedPayment.Click += new EventHandler(this.btnProceedPayment_Click);
@@ -187,6 +195,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.pnlBottom.Controls.Add(this.lblTotalTitle);
             this.pnlBottom.Controls.Add(this.lblTotalValue);
             this.pnlBottom.Controls.Add(this.btnBack);
+            this.pnlBottom.Controls.Add(this.btnResetTable);
             this.pnlBottom.Controls.Add(this.btnProceedPayment);
 
             this.Controls.Add(this.tlpMain);

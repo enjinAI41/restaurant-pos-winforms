@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Rivada.Restaurant.Models;
 using Rivada.Restaurant.Services.Interfaces;
 using Rivada.Restaurant.Services.Models;
+using Rivada.Restaurant.WinForms.Infrastructure;
 
 namespace Rivada.Restaurant.WinForms.Forms
 {
@@ -19,6 +20,7 @@ namespace Rivada.Restaurant.WinForms.Forms
         private readonly IOrderService _orderService;
         private readonly IPaymentService _paymentService;
         private bool _isItemOperationRunning;
+        private bool _isResetOperationRunning;
 
         public OrderForm(
             User loggedInUser,
@@ -39,6 +41,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             ConfigureVisualStyle();
             ConfigureBillGrid();
             UpdateHeader();
+            ConfigureFooterLayout();
         }
 
         protected override async void OnShown(EventArgs e)
@@ -49,6 +52,17 @@ namespace Rivada.Restaurant.WinForms.Forms
 
         private async Task LoadInitialDataAsync()
         {
+            if (_billId <= 0 || _tableId <= 0)
+            {
+                MessageBox.Show(
+                    "Geçerli bir masa bulunamadı.",
+                    "Dogrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                Close();
+                return;
+            }
+
             await LoadCategoriesAsync();
             await LoadBillItemsAsync();
         }
@@ -72,6 +86,40 @@ namespace Rivada.Restaurant.WinForms.Forms
             dgvBillItems.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
             dgvBillItems.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
             dgvBillItems.DefaultCellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+        }
+
+        private void ConfigureFooterLayout()
+        {
+            btnProceedPayment.Visible = true;
+            btnResetTable.Visible = true;
+            btnProceedPayment.BringToFront();
+            btnResetTable.BringToFront();
+            btnBack.BringToFront();
+
+            pnlBottom.Resize += (_, _) => LayoutFooterButtons();
+            LayoutFooterButtons();
+        }
+
+        private void LayoutFooterButtons()
+        {
+            const int rightMargin = 22;
+            const int spacing = 12;
+            const int top = 22;
+
+            btnProceedPayment.Top = top;
+            btnProceedPayment.Left = Math.Max(
+                rightMargin,
+                pnlBottom.ClientSize.Width - btnProceedPayment.Width - rightMargin);
+
+            btnBack.Top = top;
+            btnBack.Left = Math.Max(
+                rightMargin,
+                btnProceedPayment.Left - btnResetTable.Width - btnBack.Width - (spacing * 2));
+
+            btnResetTable.Top = top;
+            btnResetTable.Left = Math.Max(
+                rightMargin,
+                btnProceedPayment.Left - btnResetTable.Width - spacing);
         }
 
         private void ConfigureBillGrid()
@@ -171,6 +219,11 @@ namespace Rivada.Restaurant.WinForms.Forms
                 colMinus,
                 colEditNote,
                 colRemove);
+
+            foreach (DataGridViewColumn column in dgvBillItems.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
         }
 
         private async Task LoadCategoriesAsync()
@@ -191,11 +244,11 @@ namespace Rivada.Restaurant.WinForms.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Kategoriler yuklenemedi.\n\n{ex.Message}",
-                    "Hata",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                AppDiagnostics.ShowError(
+                    this,
+                    "Kategoriler yuklenemedi.",
+                    ex,
+                    "OrderForm.LoadCategoriesAsync");
             }
             finally
             {
@@ -228,11 +281,11 @@ namespace Rivada.Restaurant.WinForms.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Urunler yuklenemedi.\n\n{ex.Message}",
-                    "Hata",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                AppDiagnostics.ShowError(
+                    this,
+                    "Urun listesi yuklenemedi.",
+                    ex,
+                    "OrderForm.LoadProductsAsync");
             }
             finally
             {
@@ -273,6 +326,11 @@ namespace Rivada.Restaurant.WinForms.Forms
 
             if (sender is not Button button || button.Tag is not Product product)
             {
+                MessageBox.Show(
+                    "Lütfen önce bir ürün seçin.",
+                    "Doğrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
 
@@ -283,13 +341,21 @@ namespace Rivada.Restaurant.WinForms.Forms
                 await Task.Run(() => _orderService.AddProductToBill(_billId, product.Id));
                 await LoadBillItemsAsync();
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 MessageBox.Show(
-                    $"Urun eklenemedi.\n\n{ex.Message}",
-                    "Hata",
+                    ex.Message,
+                    "Islem Hatasi",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Urun hesaba eklenemedi.",
+                    ex,
+                    "OrderForm.ProductButton_Click");
             }
             finally
             {
@@ -307,13 +373,21 @@ namespace Rivada.Restaurant.WinForms.Forms
                 RenderBillItems(details);
                 UpdateTotals(details);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 MessageBox.Show(
-                    $"Hesap detaylari yuklenemedi.\n\n{ex.Message}",
-                    "Hata",
+                    ex.Message,
+                    "İşlem Hatası",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Hesap detaylari yuklenemedi.",
+                    ex,
+                    "OrderForm.LoadBillItemsAsync");
             }
             finally
             {
@@ -359,10 +433,23 @@ namespace Rivada.Restaurant.WinForms.Forms
                 return;
             }
 
-            var row = dgvBillItems.Rows[e.RowIndex];
-            var billItemId = Convert.ToInt32(row.Cells["colId"].Value);
             var columnName = dgvBillItems.Columns[e.ColumnIndex].Name;
+            if (columnName != "colPlus" && columnName != "colMinus" && columnName != "colRemove" && columnName != "colEditNote")
+            {
+                return;
+            }
 
+            if (!TryGetBillItemIdFromRow(e.RowIndex, out var billItemId))
+            {
+                MessageBox.Show(
+                    "Seçili sipariş satırı bulunamadı.",
+                    "Doğrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var operationErrorMessage = "Sipariş güncellenemedi.";
             try
             {
                 _isItemOperationRunning = true;
@@ -382,6 +469,8 @@ namespace Rivada.Restaurant.WinForms.Forms
                 }
                 else if (columnName == "colEditNote")
                 {
+                    operationErrorMessage = "Sipariş notu kaydedilemedi.";
+                    var row = dgvBillItems.Rows[e.RowIndex];
                     var currentNote = Convert.ToString(row.Cells["colNote"].Value);
                     var noteResult = NotePromptDialog.ShowDialog(currentNote ?? string.Empty);
                     if (!noteResult.Submitted)
@@ -394,13 +483,21 @@ namespace Rivada.Restaurant.WinForms.Forms
 
                 await LoadBillItemsAsync();
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 MessageBox.Show(
-                    $"Hesap kalemi guncellenemedi.\n\n{ex.Message}",
-                    "Hata",
+                    ex.Message,
+                    "İşlem Hatası",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    operationErrorMessage,
+                    ex,
+                    "OrderForm.dgvBillItems_CellContentClick");
             }
             finally
             {
@@ -414,13 +511,101 @@ namespace Rivada.Restaurant.WinForms.Forms
             Close();
         }
 
+        private async void btnResetTable_Click(object? sender, EventArgs e)
+        {
+            if (_isResetOperationRunning)
+            {
+                return;
+            }
+
+            if (_tableId <= 0)
+            {
+                MessageBox.Show(
+                    "Geçerli bir masa bulunamadı.",
+                    "Doğrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var confirm = MessageBox.Show(
+                "Bu masa sıfırlansın mı?",
+                "Onay",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                _isResetOperationRunning = true;
+                btnResetTable.Enabled = false;
+                UseWaitCursor = true;
+
+                var result = await Task.Run(() => _paymentService.ResetTable(_tableId));
+                if (!result.Success)
+                {
+                    MessageBox.Show(
+                        result.Message,
+                        "İşlem Hatası",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                MessageBox.Show(
+                    result.Message,
+                    "Başarılı",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                Close();
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Masa durumu güncellenemedi.",
+                    ex,
+                    "OrderForm.btnResetTable_Click");
+            }
+            finally
+            {
+                UseWaitCursor = false;
+                _isResetOperationRunning = false;
+                btnResetTable.Enabled = true;
+            }
+        }
+
         private void btnProceedPayment_Click(object? sender, EventArgs e)
         {
-            using var paymentForm = new PaymentForm(_loggedInUser, _billId, _tableId, _tableName, _paymentService);
-            var result = paymentForm.ShowDialog(this);
-            if (result == DialogResult.OK)
+            if (_billId <= 0 || _tableId <= 0)
             {
-                Close();
+                MessageBox.Show(
+                    "Aktif adisyon bulunamadı.",
+                    "Dogrulama",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using var paymentForm = new PaymentForm(_loggedInUser, _billId, _tableId, _tableName, _paymentService);
+                var result = paymentForm.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                AppDiagnostics.ShowError(
+                    this,
+                    "Odeme ekrani acilamadi.",
+                    ex,
+                    "OrderForm.btnProceedPayment_Click");
             }
         }
 
@@ -490,5 +675,23 @@ namespace Rivada.Restaurant.WinForms.Forms
             public bool Submitted { get; set; }
             public string? Note { get; set; }
         }
+
+        private bool TryGetBillItemIdFromRow(int rowIndex, out int billItemId)
+        {
+            billItemId = 0;
+            if (rowIndex < 0 || rowIndex >= dgvBillItems.Rows.Count)
+            {
+                return false;
+            }
+
+            var row = dgvBillItems.Rows[rowIndex];
+            if (row?.Cells["colId"].Value == null)
+            {
+                return false;
+            }
+
+            return int.TryParse(Convert.ToString(row.Cells["colId"].Value), out billItemId) && billItemId > 0;
+        }
     }
 }
+

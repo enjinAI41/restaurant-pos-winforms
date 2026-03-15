@@ -84,6 +84,29 @@ LIMIT 1;";
             return MapBill(reader);
         }
 
+        public Bill? GetBillById(int billId)
+        {
+            const string sql = @"
+SELECT Id, TableId, OpenedByUserId, ClosedByUserId, Status, TotalAmount, OpenedAt, ClosedAt, CreatedAt, UpdatedAt
+FROM Bills
+WHERE Id = @BillId
+LIMIT 1;";
+
+            using var connection = _databaseHelper.CreateConnection();
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            AddParameter(command, "@BillId", billId);
+
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
+            {
+                return null;
+            }
+
+            return MapBill(reader);
+        }
+
         public Dictionary<int, Bill> GetAllOpenBillsByTableId()
         {
             const string sql = @"
@@ -171,6 +194,54 @@ SET Status = 0,
 WHERE Id = @TableId;";
                 AddParameter(updateTableCommand, "@TableId", tableId.Value);
                 updateTableCommand.ExecuteNonQuery();
+
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        public bool ForceResetTable(int tableId)
+        {
+            if (tableId <= 0)
+            {
+                return false;
+            }
+
+            using var connection = _databaseHelper.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                using var deleteOpenBills = connection.CreateCommand();
+                deleteOpenBills.Transaction = transaction;
+                deleteOpenBills.CommandText = @"
+DELETE FROM Bills
+WHERE TableId = @TableId
+  AND Status = @OpenStatus;";
+                AddParameter(deleteOpenBills, "@TableId", tableId);
+                AddParameter(deleteOpenBills, "@OpenStatus", (int)BillStatus.Open);
+                deleteOpenBills.ExecuteNonQuery();
+
+                using var updateTable = connection.CreateCommand();
+                updateTable.Transaction = transaction;
+                updateTable.CommandText = @"
+UPDATE RestaurantTables
+SET Status = @Status,
+    UpdatedAt = CURRENT_TIMESTAMP
+WHERE Id = @TableId;";
+                AddParameter(updateTable, "@Status", (int)TableStatus.Empty);
+                AddParameter(updateTable, "@TableId", tableId);
+                if (updateTable.ExecuteNonQuery() == 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
 
                 transaction.Commit();
                 return true;

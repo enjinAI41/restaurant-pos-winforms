@@ -12,6 +12,15 @@ namespace Rivada.Restaurant.WinForms.Forms
         private Panel pnlTop = null!;
         private Label lblTitle = null!;
         private Label lblUser = null!;
+        private SplitContainer splitMain = null!;
+        private GroupBox grpCategories = null!;
+        private ListBox lstCategories = null!;
+        private Label lblCategoryName = null!;
+        private TextBox txtCategoryName = null!;
+        private CheckBox chkCategoryIsActive = null!;
+        private Button btnCategoryAdd = null!;
+        private Button btnCategoryUpdate = null!;
+        private Button btnCategoryToggleActive = null!;
         private GroupBox grpProductForm = null!;
         private Label lblProductName = null!;
         private Label lblCategory = null!;
@@ -22,9 +31,9 @@ namespace Rivada.Restaurant.WinForms.Forms
         private CheckBox chkIsActive = null!;
         private Button btnAdd = null!;
         private Button btnUpdate = null!;
-        private Button btnClear = null!;
-        private Button btnDelete = null!;
+        private Button btnProductClear = null!;
         private Button btnMarkInactive = null!;
+        private Button btnDelete = null!;
         private DataGridView dgvProducts = null!;
 
         protected override void Dispose(bool disposing)
@@ -43,6 +52,15 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.pnlTop = new Panel();
             this.lblTitle = new Label();
             this.lblUser = new Label();
+            this.splitMain = new SplitContainer();
+            this.grpCategories = new GroupBox();
+            this.lstCategories = new ListBox();
+            this.lblCategoryName = new Label();
+            this.txtCategoryName = new TextBox();
+            this.chkCategoryIsActive = new CheckBox();
+            this.btnCategoryAdd = new Button();
+            this.btnCategoryUpdate = new Button();
+            this.btnCategoryToggleActive = new Button();
             this.grpProductForm = new GroupBox();
             this.lblProductName = new Label();
             this.lblCategory = new Label();
@@ -53,22 +71,27 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.chkIsActive = new CheckBox();
             this.btnAdd = new Button();
             this.btnUpdate = new Button();
-            this.btnClear = new Button();
-            this.btnDelete = new Button();
+            this.btnProductClear = new Button();
             this.btnMarkInactive = new Button();
+            this.btnDelete = new Button();
             this.dgvProducts = new DataGridView();
             this.pnlTop.SuspendLayout();
+            ((ISupportInitialize)(this.splitMain)).BeginInit();
+            this.splitMain.Panel1.SuspendLayout();
+            this.splitMain.Panel2.SuspendLayout();
+            this.splitMain.SuspendLayout();
+            this.grpCategories.SuspendLayout();
             this.grpProductForm.SuspendLayout();
             ((ISupportInitialize)(this.dgvProducts)).BeginInit();
             this.SuspendLayout();
 
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(239, 244, 249);
-            this.ClientSize = new Size(1180, 760);
-            this.MinimumSize = new Size(1060, 700);
+            this.ClientSize = new Size(1260, 760);
+            this.MinimumSize = new Size(1120, 700);
             this.Name = "ProductManagementForm";
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Text = "Urun Yonetimi";
+            this.Text = "Menü Yönetimi";
 
             this.pnlTop.Dock = DockStyle.Top;
             this.pnlTop.Height = 78;
@@ -78,72 +101,116 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblTitle.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblTitle.ForeColor = Color.FromArgb(15, 23, 42);
             this.lblTitle.Location = new Point(20, 17);
-            this.lblTitle.Text = "Urun Yonetimi";
+            this.lblTitle.Text = "Menü Yönetimi";
 
             this.lblUser.AutoSize = true;
             this.lblUser.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.lblUser.ForeColor = Color.FromArgb(71, 85, 105);
             this.lblUser.Location = new Point(22, 48);
-            this.lblUser.Text = "Kullanici";
+            this.lblUser.Text = "Kullanıcı";
+
+            this.splitMain.Dock = DockStyle.Fill;
+            this.splitMain.Location = new Point(0, 78);
+            this.splitMain.Name = "splitMain";
+            this.splitMain.SplitterDistance = 350;
+            this.splitMain.Panel1MinSize = 120;
+            this.splitMain.Panel2MinSize = 120;
+
+            this.grpCategories.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.grpCategories.BackColor = Color.White;
+            this.grpCategories.Text = "Kategoriler";
+            this.grpCategories.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.grpCategories.Location = new Point(12, 12);
+            this.grpCategories.Size = new Size(326, 658);
+
+            this.lstCategories.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.lstCategories.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.lstCategories.Location = new Point(16, 32);
+            this.lstCategories.Size = new Size(294, 292);
+            this.lstCategories.SelectedIndexChanged += new EventHandler(this.lstCategories_SelectedIndexChanged);
+
+            this.lblCategoryName.AutoSize = true;
+            this.lblCategoryName.Text = "Kategori Adı";
+            this.lblCategoryName.Location = new Point(16, 340);
+
+            this.txtCategoryName.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.txtCategoryName.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.txtCategoryName.BorderStyle = BorderStyle.FixedSingle;
+            this.txtCategoryName.Location = new Point(16, 364);
+            this.txtCategoryName.Size = new Size(294, 25);
+
+            this.chkCategoryIsActive.AutoSize = true;
+            this.chkCategoryIsActive.Text = "Aktif";
+            this.chkCategoryIsActive.Checked = true;
+            this.chkCategoryIsActive.Location = new Point(16, 399);
+
+            ConfigureActionButton(this.btnCategoryAdd, "Kategori Ekle", 16, 430, 140, Color.FromArgb(15, 118, 110), Color.White);
+            this.btnCategoryAdd.Click += new EventHandler(this.btnCategoryAdd_Click);
+
+            ConfigureActionButton(this.btnCategoryUpdate, "Kategori Güncelle", 170, 430, 140, Color.FromArgb(30, 64, 175), Color.White);
+            this.btnCategoryUpdate.Click += new EventHandler(this.btnCategoryUpdate_Click);
+
+            ConfigureActionButton(this.btnCategoryToggleActive, "Kategoriyi Pasif Yap", 16, 476, 294, Color.FromArgb(254, 240, 138), Color.FromArgb(113, 63, 18));
+            this.btnCategoryToggleActive.Click += new EventHandler(this.btnCategoryToggleActive_Click);
 
             this.grpProductForm.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            this.grpProductForm.Text = "Urun Detaylari";
+            this.grpProductForm.Text = "Ürün Detayları";
             this.grpProductForm.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.grpProductForm.BackColor = Color.White;
-            this.grpProductForm.Location = new Point(16, 92);
-            this.grpProductForm.Size = new Size(1148, 182);
+            this.grpProductForm.Location = new Point(12, 12);
+            this.grpProductForm.Size = new Size(874, 206);
 
             this.lblProductName.AutoSize = true;
-            this.lblProductName.Text = "Urun Adi";
-            this.lblProductName.Location = new Point(20, 38);
+            this.lblProductName.Text = "Ürün Adı";
+            this.lblProductName.Location = new Point(20, 36);
 
             this.txtProductName.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.txtProductName.BorderStyle = BorderStyle.FixedSingle;
-            this.txtProductName.Location = new Point(20, 62);
-            this.txtProductName.Size = new Size(330, 25);
+            this.txtProductName.Location = new Point(20, 60);
+            this.txtProductName.Size = new Size(300, 25);
 
             this.lblCategory.AutoSize = true;
             this.lblCategory.Text = "Kategori";
-            this.lblCategory.Location = new Point(368, 38);
+            this.lblCategory.Location = new Point(336, 36);
 
             this.cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbCategory.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            this.cmbCategory.Location = new Point(368, 62);
-            this.cmbCategory.Size = new Size(250, 25);
+            this.cmbCategory.Location = new Point(336, 60);
+            this.cmbCategory.Size = new Size(220, 25);
 
             this.lblPrice.AutoSize = true;
             this.lblPrice.Text = "Fiyat";
-            this.lblPrice.Location = new Point(636, 38);
+            this.lblPrice.Location = new Point(572, 36);
 
             this.txtPrice.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.txtPrice.BorderStyle = BorderStyle.FixedSingle;
-            this.txtPrice.Location = new Point(636, 62);
-            this.txtPrice.Size = new Size(160, 25);
+            this.txtPrice.Location = new Point(572, 60);
+            this.txtPrice.Size = new Size(150, 25);
             this.txtPrice.KeyPress += new KeyPressEventHandler(this.txtPrice_KeyPress);
 
             this.chkIsActive.AutoSize = true;
             this.chkIsActive.Text = "Aktif";
-            this.chkIsActive.Location = new Point(820, 64);
+            this.chkIsActive.Location = new Point(742, 62);
             this.chkIsActive.Checked = true;
 
-            ConfigureActionButton(this.btnAdd, "Ekle", 20, Color.FromArgb(15, 118, 110), Color.White);
+            ConfigureActionButton(this.btnAdd, "Ürün Ekle", 20, 108, 118, Color.FromArgb(15, 118, 110), Color.White);
             this.btnAdd.Click += new EventHandler(this.btnAdd_Click);
 
-            ConfigureActionButton(this.btnUpdate, "Guncelle", 146, Color.FromArgb(30, 64, 175), Color.White);
+            ConfigureActionButton(this.btnUpdate, "Ürün Güncelle", 146, 108, 128, Color.FromArgb(30, 64, 175), Color.White);
             this.btnUpdate.Click += new EventHandler(this.btnUpdate_Click);
 
-            ConfigureActionButton(this.btnClear, "Temizle", 272, Color.FromArgb(226, 232, 240), Color.FromArgb(15, 23, 42));
-            this.btnClear.Click += new EventHandler(this.btnClear_Click);
+            ConfigureActionButton(this.btnProductClear, "Temizle", 282, 108, 100, Color.FromArgb(226, 232, 240), Color.FromArgb(15, 23, 42));
+            this.btnProductClear.Click += new EventHandler(this.btnProductClear_Click);
 
-            ConfigureActionButton(this.btnMarkInactive, "Pasif Yap", 398, Color.FromArgb(254, 240, 138), Color.FromArgb(113, 63, 18));
+            ConfigureActionButton(this.btnMarkInactive, "Ürünü Sil", 390, 108, 156, Color.FromArgb(254, 240, 138), Color.FromArgb(113, 63, 18));
             this.btnMarkInactive.Click += new EventHandler(this.btnMarkInactive_Click);
 
-            ConfigureActionButton(this.btnDelete, "Sil", 560, Color.FromArgb(254, 226, 226), Color.FromArgb(153, 27, 27));
+            ConfigureActionButton(this.btnDelete, "Ürünü Pasife Al", 554, 108, 156, Color.FromArgb(254, 226, 226), Color.FromArgb(153, 27, 27));
             this.btnDelete.Click += new EventHandler(this.btnDelete_Click);
 
             this.dgvProducts.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            this.dgvProducts.Location = new Point(16, 290);
-            this.dgvProducts.Size = new Size(1148, 454);
+            this.dgvProducts.Location = new Point(12, 232);
+            this.dgvProducts.Size = new Size(874, 438);
             this.dgvProducts.ReadOnly = true;
             this.dgvProducts.AllowUserToAddRows = false;
             this.dgvProducts.AllowUserToDeleteRows = false;
@@ -160,6 +227,14 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.pnlTop.Controls.Add(this.lblTitle);
             this.pnlTop.Controls.Add(this.lblUser);
 
+            this.grpCategories.Controls.Add(this.lstCategories);
+            this.grpCategories.Controls.Add(this.lblCategoryName);
+            this.grpCategories.Controls.Add(this.txtCategoryName);
+            this.grpCategories.Controls.Add(this.chkCategoryIsActive);
+            this.grpCategories.Controls.Add(this.btnCategoryAdd);
+            this.grpCategories.Controls.Add(this.btnCategoryUpdate);
+            this.grpCategories.Controls.Add(this.btnCategoryToggleActive);
+
             this.grpProductForm.Controls.Add(this.lblProductName);
             this.grpProductForm.Controls.Add(this.txtProductName);
             this.grpProductForm.Controls.Add(this.lblCategory);
@@ -169,27 +244,36 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.grpProductForm.Controls.Add(this.chkIsActive);
             this.grpProductForm.Controls.Add(this.btnAdd);
             this.grpProductForm.Controls.Add(this.btnUpdate);
-            this.grpProductForm.Controls.Add(this.btnClear);
+            this.grpProductForm.Controls.Add(this.btnProductClear);
             this.grpProductForm.Controls.Add(this.btnMarkInactive);
             this.grpProductForm.Controls.Add(this.btnDelete);
 
+            this.splitMain.Panel1.Controls.Add(this.grpCategories);
+            this.splitMain.Panel2.Controls.Add(this.grpProductForm);
+            this.splitMain.Panel2.Controls.Add(this.dgvProducts);
+
+            this.Controls.Add(this.splitMain);
             this.Controls.Add(this.pnlTop);
-            this.Controls.Add(this.grpProductForm);
-            this.Controls.Add(this.dgvProducts);
 
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
+            this.splitMain.Panel1.ResumeLayout(false);
+            this.splitMain.Panel2.ResumeLayout(false);
+            ((ISupportInitialize)(this.splitMain)).EndInit();
+            this.splitMain.ResumeLayout(false);
+            this.grpCategories.ResumeLayout(false);
+            this.grpCategories.PerformLayout();
             this.grpProductForm.ResumeLayout(false);
             this.grpProductForm.PerformLayout();
             ((ISupportInitialize)(this.dgvProducts)).EndInit();
             this.ResumeLayout(false);
         }
 
-        private static void ConfigureActionButton(Button button, string text, int x, Color backColor, Color foreColor)
+        private static void ConfigureActionButton(Button button, string text, int x, int y, int width, Color backColor, Color foreColor)
         {
             button.Text = text;
-            button.Location = new Point(x, 116);
-            button.Size = new Size(text == "Pasif Yap" ? 150 : 118, 38);
+            button.Location = new Point(x, y);
+            button.Size = new Size(width, 36);
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 0;
             button.BackColor = backColor;
@@ -199,5 +283,3 @@ namespace Rivada.Restaurant.WinForms.Forms
         }
     }
 }
-
-

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Microsoft.Data.Sqlite;
 using Rivada.Restaurant.Data.Repositories;
 using Rivada.Restaurant.Models;
 using Rivada.Restaurant.Services.Interfaces;
@@ -13,26 +14,41 @@ namespace Rivada.Restaurant.Services
     {
         private readonly BillItemRepository _billItemRepository;
         private readonly PaymentRepository _paymentRepository;
+        private readonly BillRepository _billRepository;
+        private readonly RestaurantTableRepository _tableRepository;
 
-        public PaymentService(BillItemRepository billItemRepository, PaymentRepository paymentRepository)
+        public PaymentService(
+            BillItemRepository billItemRepository,
+            PaymentRepository paymentRepository,
+            BillRepository billRepository,
+            RestaurantTableRepository tableRepository)
         {
             _billItemRepository = billItemRepository ?? throw new ArgumentNullException(nameof(billItemRepository));
             _paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
+            _billRepository = billRepository ?? throw new ArgumentNullException(nameof(billRepository));
+            _tableRepository = tableRepository ?? throw new ArgumentNullException(nameof(tableRepository));
         }
 
         public PaymentViewData GetPaymentViewData(int billId, string tableName)
         {
+            if (billId <= 0)
+            {
+                throw new InvalidOperationException("Gecersiz hesap bilgisi.");
+            }
+
+            EnsureOpenBillOrThrow(billId);
             var items = _billItemRepository.GetBillItemsByBillId(billId);
             var subtotal = items.Sum(x => x.LineTotal);
+            var safeTableName = string.IsNullOrWhiteSpace(tableName) ? "Bilinmeyen Masa" : tableName.Trim();
 
             return new PaymentViewData
             {
                 BillId = billId,
-                TableName = tableName,
+                TableName = safeTableName,
                 Items = items,
                 Subtotal = subtotal,
                 Total = subtotal,
-                ReceiptPreview = BuildReceiptPreview(tableName, billId, items, subtotal)
+                ReceiptPreview = BuildReceiptPreview(safeTableName, billId, items, subtotal)
             };
         }
 
@@ -43,11 +59,37 @@ namespace Rivada.Restaurant.Services
                 return new PaymentCompletionResult
                 {
                     Success = false,
-                    Message = "Gecersiz odeme baglami. Hesabi yeniden acip tekrar deneyin."
+                    Message = "Ödeme işlemi tamamlanamadı."
                 };
             }
 
-            var paidAmount = _paymentRepository.CreatePaymentAndCloseBillAtomic(billId, paidByUserId, paymentType);
+            var bill = _billRepository.GetBillById(billId);
+            if (bill == null || bill.Status != BillStatus.Open)
+            {
+                return new PaymentCompletionResult
+                {
+                    Success = false,
+                    Message = "Aktif adisyon bulunamadı."
+                };
+            }
+
+            decimal? paidAmount;
+            try
+            {
+                paidAmount = _paymentRepository.CreatePaymentAndCloseBillAtomic(billId, paidByUserId, paymentType);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return new PaymentCompletionResult
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+            catch (SqliteException ex)
+            {
+                throw new InvalidOperationException("Odeme kaydi olusturulurken veritabani hatasi olustu.", ex);
+            }
             if (!paidAmount.HasValue)
             {
                 var hasItems = _billItemRepository.GetBillItemsByBillId(billId).Count > 0;
@@ -55,16 +97,62 @@ namespace Rivada.Restaurant.Services
                 {
                     Success = false,
                     Message = hasItems
-                        ? "Odeme tamamlanamadi. Hesap zaten kapatilmis olabilir."
-                        : "Hesapta urun yok. Odemeden once urun ekleyin."
+                        ? "Ödeme işlemi tamamlanamadı."
+                        : "Boş adisyon için ödeme alınamaz."
                 };
             }
 
             return new PaymentCompletionResult
             {
                 Success = true,
-                Message = $"Odeme basariyla tamamlandi. Toplam: {paidAmount.Value.ToString("C2", CultureInfo.CurrentCulture)}"
+                Message = $"Ödeme başarıyla tamamlandı. Masa sıfırlandı. Toplam: {paidAmount.Value.ToString("C2", CultureInfo.CurrentCulture)}"
             };
+        }
+
+        public PaymentCompletionResult ResetTable(int tableId)
+        {
+            if (tableId <= 0)
+            {
+                return new PaymentCompletionResult
+                {
+                    Success = false,
+                    Message = "Geçerli bir masa bulunamadı."
+                };
+            }
+
+            var table = _tableRepository.GetTableById(tableId);
+            if (table == null || !table.IsActive)
+            {
+                return new PaymentCompletionResult
+                {
+                    Success = false,
+                    Message = "Geçerli bir masa bulunamadı."
+                };
+            }
+
+            if (!_billRepository.ForceResetTable(tableId))
+            {
+                return new PaymentCompletionResult
+                {
+                    Success = false,
+                    Message = "Masa durumu güncellenemedi."
+                };
+            }
+
+            return new PaymentCompletionResult
+            {
+                Success = true,
+                Message = "Masa sıfırlandı."
+            };
+        }
+
+        private void EnsureOpenBillOrThrow(int billId)
+        {
+            var bill = _billRepository.GetBillById(billId);
+            if (bill == null || bill.Status != BillStatus.Open)
+            {
+                throw new InvalidOperationException("Aktif adisyon bulunamadı.");
+            }
         }
 
         private static string BuildReceiptPreview(string tableName, int billId, System.Collections.Generic.List<BillItem> items, decimal total)
@@ -91,3 +179,4 @@ namespace Rivada.Restaurant.Services
         }
     }
 }
+
