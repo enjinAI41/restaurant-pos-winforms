@@ -266,8 +266,11 @@ namespace Rivada.Restaurant.WinForms.Forms
             await LoadProductsAsync(categoryId);
         }
 
+        private int _stockCategoryId;
+
         private async Task LoadProductsAsync(int categoryId)
         {
+            _stockCategoryId = categoryId;
             try
             {
                 UseWaitCursor = true;
@@ -298,14 +301,15 @@ namespace Rivada.Restaurant.WinForms.Forms
             var button = new Button
             {
                 Width = 190,
-                Height = 96,
+                Height = 114,
                 Margin = new Padding(10),
                 TextAlign = ContentAlignment.MiddleLeft,
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(241, 245, 249),
                 ForeColor = Color.FromArgb(15, 23, 42),
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
-                Text = $"{product.Name}{Environment.NewLine}{product.Price.ToString("C2", CultureInfo.CurrentCulture)}",
+                Text = $"{product.Name}{Environment.NewLine}{product.Price.ToString("C2", CultureInfo.CurrentCulture)}"
+                    + (product.IsStockTracked ? $"{Environment.NewLine}Satılabilir: {product.AvailableStock} adet" : ""),
                 Tag = product,
                 Cursor = Cursors.Hand
             };
@@ -372,6 +376,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 var details = await Task.Run(() => _orderService.GetBillDetails(_billId));
                 RenderBillItems(details);
                 UpdateTotals(details);
+                if (_stockCategoryId > 0) await LoadProductsAsync(_stockCategoryId);
             }
             catch (InvalidOperationException ex)
             {

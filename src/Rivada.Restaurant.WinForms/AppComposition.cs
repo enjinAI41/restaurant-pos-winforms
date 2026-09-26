@@ -15,6 +15,9 @@ namespace Rivada.Restaurant.WinForms
         public required IOrderService OrderService { get; init; }
         public required IPaymentService PaymentService { get; init; }
         public required IProductManagementService ProductManagementService { get; init; }
+        public required IStockService StockService { get; init; }
+        public required INotificationService NotificationService { get; init; }
+        public required IRevenueService RevenueService { get; init; }
     }
 
     internal static class AppComposition
@@ -42,9 +45,12 @@ namespace Rivada.Restaurant.WinForms
                 {
                     AuthService = new AuthService(userRepository),
                     TableManagementService = new TableManagementService(tableRepository, billRepository),
-                    OrderService = new OrderService(categoryRepository, productRepository, billItemRepository, billRepository),
+                    OrderService = new OrderService(categoryRepository, productRepository, billItemRepository, billRepository, new StockRepository(dbHelper)),
                     PaymentService = new PaymentService(billItemRepository, paymentRepository, billRepository, tableRepository),
-                    ProductManagementService = new ProductManagementService(productRepository, categoryRepository)
+                    ProductManagementService = new ProductManagementService(productRepository, categoryRepository),
+                    StockService = new StockService(new StockRepository(dbHelper)),
+                    NotificationService = new NotificationService(new NotificationRepository(dbHelper)),
+                    RevenueService = new RevenueService(new RevenueRepository(dbHelper))
                 };
             }
             catch (IOException ex)

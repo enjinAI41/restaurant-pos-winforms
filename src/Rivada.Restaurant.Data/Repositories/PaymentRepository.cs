@@ -77,6 +77,8 @@ SELECT last_insert_rowid();";
                     return null;
                 }
 
+                StockRepository.CompleteSale(connection, transaction, billId, paidByUserId);
+
                 using var paymentCommand = connection.CreateCommand();
                 paymentCommand.Transaction = transaction;
                 paymentCommand.CommandText = @"

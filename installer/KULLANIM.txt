@@ -1,0 +1,101 @@
+RIVADA RESTAURANT POS 1.6 — ŞİFRELİ STOK YÖNETİMİ
+
+1.6 YENİLİĞİ
+Stok Takibi her açıldığında ayrıca stok yönetimi şifresi sorulur.
+Şifre işletme yöneticisi tarafından paylaşılır. Yanlış şifre, İptal, Esc veya pencereyi
+kapatma stok ekranını açmaz. Ekrandan çıkıp tekrar girince yeniden şifre gerekir.
+Yönetici yetkisi de gereklidir; normal kullanıcı giriş şifresi değişmez.
+1.5'ten güncellemede menü, stok adetleri, kullanıcılar ve satışlar değiştirilmez.
+
+Lisans zorunluluğu, süre kontrolü ve cihaz kodu kaldırıldı.
+Uygulama doğrudan kullanıcı giriş ekranına açılır; mevcut kullanıcı adı/şifre ve yetkiler devam eder.
+Eski lisans dosyaları varsa dikkate alınmaz; yeni lisans veya anahtar oluşturmak gerekmez.
+
+GÜNCELLEME
+1. ZIP'i kurulu uygulama klasörünün dışında yeni bir klasöre tamamen çıkarın.
+2. Rivada Restaurant POS uygulamasını kapatın.
+3. Rivada.Guncelle.exe dosyasını çalıştırın.
+4. Mevcut uygulama klasörünü seçin (genellikle %LOCALAPPDATA%\Rivada Restaurant POS).
+5. Yedekle ve Güncelle düğmesine basın. Bitince uygulamayı eski kısayolundan açın.
+
+Mevcut programı kaldırmayın. Eski restaurant.db dosyasını silmeyin veya değiştirmeyin.
+Doğru kurulum klasörünü bulmak için masaüstündeki mevcut POS kısayoluna sağ tıklayıp
+Dosya konumunu aç kullanın; bu klasörü güncelleyicide seçin.
+ZIP içindeki Rivada.Restaurant.WinForms.exe yerine Rivada.Guncelle.exe çalıştırın.
+ZIP içindeki POS'u açmak ayrı, boş bir veritabanı oluşturabilir.
+
+Güncelleyici mevcut uygulama ve veri dosyalarını yanındaki Rivada POS Backups klasörüne yedekler.
+Mevcut veritabanı korunur. Paket müşteri verisi veya anahtar içermez.
+İlk açılışta ayrıca veritabanı backups klasörüne yedeklenerek eksik güncellemeler uygulanır.
+
+CİRO TAKİBİ
+Yönetici hesabıyla ana ekrandaki Ciro Takibi düğmesini kullanın.
+Bugün, Dün, Bu hafta ve Bu ay kısayolları veya başlangıç/bitiş tarihleriyle rapor alın.
+Gün yerel saatle 00.00'da başlar. Ciro ödeme tarihine göre hesaplanır; gece yarısından
+sonra ödenen hesap, masa önceki gün açılmış olsa bile yeni güne yazılır.
+Toplam tahsilat, nakit/kart ayrımı, ödenen adisyon sayısı ve ortalama hesap görünür.
+Ödemeler sekmesinde tarih, adisyon, masa, yöntem, tutar ve işlemi yapan kullanıcı listelenir.
+Günlük ciro sekmesinde ödeme bulunan günlerin nakit/kart/toplam dağılımı gösterilir.
+Ürün satışları sekmesi satış anındaki ürün adını, adedini ve tutarını kullanır.
+Sonradan ürünün fiyatını/adını değiştirmek veya ürünü pasife almak geçmiş satışı değiştirmez.
+Şu an açık adisyonların tutarı ayrı gösterilir; seçilen tarihten bağımsızdır ve ciroya eklenmez.
+Sıfırlanan veya ödeme alınmadan kapatılan adisyonlar ciro oluşturmaz.
+Rapor açıldığında güncel verileri okur; tekrar hesaplamak için Raporu göster düğmesine basın.
+Mevcut eski ödeme kayıtları da rapora dahildir. Rapor verileri değiştirmez veya sıfırlamaz.
+1.4'ten güncelleme menü, stok, bildirim ve satış kayıtlarını değiştirmez.
+
+BİLDİRİM ÇUBUĞU
+Ana ekranda üst menünün altında stok uyarıları ve son masa işlemi görünür.
+Tümünü gör düğmesi güncel stok uyarıları ile son 100 masa hareketini açar.
+Bildirimler 15 saniyede bir ve işlem ekranlarından dönüldüğünde yenilenir.
+Stok uyarıları satılabilir adede göre oluşur; stok düzelince kendiliğinden kalkar.
+Kritik eşik Stok Takibi ekranındaki ürün ayarıdır. Eşik 0 ise yalnızca tükenen stok uyarılır.
+Pasif ürünler/kategoriler ve takibi kapalı ürünler stok uyarısı üretmez.
+Masa açıldığında Açıldı, ödeme alındığında tutar ve ödeme yöntemiyle Ödendi,
+masa kapandığında veya sıfırlandığında Kapandı kaydı oluşur. Sipariş penceresini
+kapatmak masayı kapatmaz. Boş masayı tekrar sıfırlamak bildirim çoğaltmaz.
+Masa hareketleri yerel saatle gösterilir, uygulama kapanınca silinmez.
+Güncellemeden önceki işlemler geriye dönük bildirim oluşturmaz.
+1.3'ten güncellemede mevcut stok ve fiyatlar değişmez.
+
+1.3 ÖNCESİNDEN GÜNCELLEME VE YENİ KURULUM: MENÜ / BAŞLANGIÇ STOKLARI
+https://rivadaotel.com/menu adresinin 26.09.2026 tarihli menüsü uygulamaya eklendi.
+Şişe boyutları dahil 86 fiyatlı kalem vardır. Eşleşen ürünler güncellenir; eksik ürünler eklenir.
+Sitede bulunmayan mevcut ürünler korunur. Eski adisyonlardaki fiyatlar ve ürün adları değişmez.
+Tüm ürünlerde stok takibi açılır ve kayıtlı stok 99 adet yapılır.
+Bu işlem veritabanı başına yalnızca bir kez uygulanır; sonraki açılışlar stok ve fiyatları sıfırlamaz.
+Sitedeki sonraki fiyat değişiklikleri otomatik alınmaz.
+
+STOK İŞLEMLERİ
+Yönetici hesabıyla masa ekranından Stok Takibi'ni açın. Ürünü ve hareket türünü seçip adedi girin.
+Açıklama alanı ve açıklama zorunluluğu kaldırıldı. Kritik stok eşiği ayrı kaydedilebilir.
+Sonradan elle eklenen ürünlerin takibini bu ekrandan açıp başlangıç adedini girin.
+
+Kayıtlı: henüz satış olarak düşülmemiş toplam adet.
+Ayrılan: açık adisyonlardaki adet. Satılabilir: kayıtlı eksi ayrılan.
+Siparişe ekleme adedi ayırır. Ödeme stoktan bir kez düşer.
+Adet azaltma, sipariş silme ve masa sıfırlama ayrılan adedi serbest bırakır.
+Ödeme yapılmadan tüketilmiş ve iptal edilmiş ürün için gerekiyorsa Fire / Çıkış kaydı girin.
+
+Giriş: stoğa eklenen adet. Fire / Çıkış: stoktan eksilen adet.
+Sayım: yeni toplam kayıtlı adet; açık adisyonlara ayrılan adetleri de dahil edin.
+Açık adisyonda bulunan ürünün takip durumu değiştirilemez.
+Stok ayrılan adetten az yapılamaz; yetersiz ürün siparişe eklenemez.
+Hareketler işlem türü, kullanıcı, tarih, son bakiye ve adisyon numarasıyla saklanır.
+Ekran seçili ürünün son 1.000 hareketini gösterir; daha eskiler veritabanında tutulur.
+
+Bu sürüm ürün/adet takibi yapar; malzeme/reçete ve ödenmiş adisyon için otomatik iade içermez.
+GitHub'a yüklenmemiş eski sürümün stokları otomatik içe aktarılmaz.
+Bu güncelleme talep edilen 99 adet başlangıcını uygular; gerçek sayım gerektiğinde Sayım ile düzenlenebilir.
+Paket müşteri veritabanı içermez. Açık adisyonlarda bir üründen 99 adedin üzerinde ayrılmışsa
+güncelleme uygulanmaz; önce eski sürümde ilgili adisyonları kapatın.
+
+GERİ DÖNÜŞ
+Güncelleme sonrası henüz işlem yapılmadıysa uygulamayı kapatıp tam güncelleme yedeğini ayrı
+bir klasörde açarak eski sürümü kullanabilirsiniz. Sonrasında satış yapıldıysa eski veritabanını
+mevcut dosyanın üzerine yazmayın; yeni satışlar kaybolur.
+
+GELİŞTİRİCİ
+.NET 10 SDK: dotnet run --project tests/StockChecks/StockChecks.csproj -c Release
+ZIP: installer/build-package.ps1 (SDK için -DotNet ile tam yol verilebilir.)
+Yeni çıktılar artifacts/packages içindedir. Derlenmiş dosyalar Git'te tutulmaz.

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Data.Sqlite;
 
 namespace Rivada.Restaurant.Data.Database
@@ -17,7 +17,24 @@ namespace Rivada.Restaurant.Data.Database
             using var connection = _databaseHelper.CreateConnection();
             connection.Open();
 
+            using var check = connection.CreateCommand();
+            check.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='Products';";
+            var existingDatabase = Convert.ToInt32(check.ExecuteScalar()) > 0;
+            check.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='PosStockBalances';";
+            if (existingDatabase && (Convert.ToInt32(check.ExecuteScalar()) == 0 || MenuCatalogMigration.IsPending(connection) || NotificationMigration.IsPending(connection)))
+            {
+                var backupDirectory = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(connection.DataSource)!, "backups");
+                System.IO.Directory.CreateDirectory(backupDirectory);
+                var backupPath = System.IO.Path.Combine(backupDirectory, $"restaurant-before-menu-stock-{DateTime.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}.db");
+                using var backup = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = backupPath }.ToString());
+                backup.Open();
+                connection.BackupDatabase(backup);
+            }
+
+            using var transaction = connection.BeginTransaction();
+
             using var command = connection.CreateCommand();
+            command.Transaction = transaction;
             command.CommandText = @"
 PRAGMA foreign_keys = ON;
 
@@ -191,160 +208,18 @@ SET IsActive = CASE
 END,
 UpdatedAt = CURRENT_TIMESTAMP;
 
-INSERT INTO Categories (Name, IsActive, CreatedAt, UpdatedAt)
-VALUES
-('MEZELER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BAŞLANGIÇLAR', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('SALATALAR', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('ANA YEMEKLER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('TAVUK YEMEKLERİ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('MEYVE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('ÇEREZLER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('SOĞUK & SICAK İÇECEKLER', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BİRALAR (50cl)', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('ŞARAPLAR 37.5cl', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('ŞARAPLAR 75cl', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('VOTKA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('VİSKİ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('RAKILAR', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-ON CONFLICT(Name) DO UPDATE SET
-    IsActive = excluded.IsActive,
-    UpdatedAt = CURRENT_TIMESTAMP;
-
-UPDATE Categories
-SET IsActive = 0,
-    UpdatedAt = CURRENT_TIMESTAMP
-WHERE Name IN ('Icecek', 'Yemek', 'Tatli', 'Drink', 'Food', 'Dessert');
-
-INSERT INTO Products (CategoryId, Name, Price, IsActive, CreatedAt, UpdatedAt)
-SELECT
-    categories.Id,
-    data.column2,
-    data.column3,
-    1,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-FROM (
-    VALUES
-    ('MEZELER', 'Beyaz Peynir', 150),
-    ('MEZELER', 'Haydari', 200),
-    ('MEZELER', 'Acılı Meze', 200),
-    ('MEZELER', 'Köpoğlu', 200),
-    ('MEZELER', 'Atom', 200),
-    ('MEZELER', 'Rus Salatası', 200),
-    ('MEZELER', 'Pastırmalı Humus', 220),
-    ('MEZELER', 'Şakşuka', 200),
-    ('MEZELER', 'Patlıcan Ezme', 200),
-    ('MEZELER', 'Girit Ezme', 200),
-    ('MEZELER', 'Yaprak Sarma', 200),
-    ('MEZELER', 'Çiğ Köfte', 200),
-    ('MEZELER', 'Havuç Tarator', 200),
-    ('MEZELER', 'Semizotu', 200),
-    ('MEZELER', 'Kuru Cacık', 180),
-    ('BAŞLANGIÇLAR', 'Kavun', 150),
-    ('BAŞLANGIÇLAR', 'Kaşarlı Mantar', 300),
-    ('BAŞLANGIÇLAR', 'Güveçte Sucuk', 300),
-    ('BAŞLANGIÇLAR', 'Yaprak Ciğer', 450),
-    ('BAŞLANGIÇLAR', 'Paçanga Böreği', 280),
-    ('BAŞLANGIÇLAR', 'Sigara Böreği', 200),
-    ('BAŞLANGIÇLAR', 'Söğüş', 100),
-    ('BAŞLANGIÇLAR', 'Patates Tava', 200),
-    ('SALATALAR', 'Mevsim Salata', 220),
-    ('SALATALAR', 'Çoban Salata', 220),
-    ('SALATALAR', 'Kaşık Salata', 220),
-    ('ANA YEMEKLER', 'Rivada Güveç', 800),
-    ('ANA YEMEKLER', 'Kuzu Pirzola', 850),
-    ('ANA YEMEKLER', 'Antrikot', 850),
-    ('ANA YEMEKLER', 'Saç Kavurma', 800),
-    ('ANA YEMEKLER', 'Köfte Izgara', 550),
-    ('ANA YEMEKLER', 'Bonfile', 1000),
-    ('ANA YEMEKLER', 'Et Çökertme', 700),
-    ('TAVUK YEMEKLERİ', 'Tavuk Saç Kavurma', 450),
-    ('TAVUK YEMEKLERİ', 'Köri Soslu Tavuk', 450),
-    ('TAVUK YEMEKLERİ', 'Kremalı Tavuk', 450),
-    ('TAVUK YEMEKLERİ', 'Kremalı Makarna', 450),
-    ('TAVUK YEMEKLERİ', 'Köri Soslu Makarna', 450),
-    ('TAVUK YEMEKLERİ', 'Tavuk Izgara', 450),
-    ('TAVUK YEMEKLERİ', 'Tavuk Schnitzel', 450),
-    ('TAVUK YEMEKLERİ', 'Tavuk Çökertme', 450),
-    ('MEYVE', 'Meyve Tabağı (Küçük)', 180),
-    ('MEYVE', 'Meyve Tabağı (Büyük)', 350),
-    ('MEYVE', 'Serpme Meyve', 400),
-    ('MEYVE', 'Ballı Muz', 250),
-    ('ÇEREZLER', 'Tuzlu Fıstık', 150),
-    ('ÇEREZLER', 'Badem', 250),
-    ('ÇEREZLER', 'Antep Fıstığı', 350),
-    ('ÇEREZLER', 'Lüks Kokteyl', 280),
-    ('ÇEREZLER', 'Çikolata', 150),
-    ('SOĞUK & SICAK İÇECEKLER', 'Cola', 100),
-    ('SOĞUK & SICAK İÇECEKLER', 'Ice Tea', 100),
-    ('SOĞUK & SICAK İÇECEKLER', 'Fanta', 100),
-    ('SOĞUK & SICAK İÇECEKLER', 'Soda', 65),
-    ('SOĞUK & SICAK İÇECEKLER', 'Şalgam (30cl)', 80),
-    ('SOĞUK & SICAK İÇECEKLER', 'Su (0.5 lt)', 20),
-    ('SOĞUK & SICAK İÇECEKLER', 'Su (1.5 lt)', 50),
-    ('SOĞUK & SICAK İÇECEKLER', 'Redbull', 160),
-    ('SOĞUK & SICAK İÇECEKLER', 'Demleme Çay', 25),
-    ('SOĞUK & SICAK İÇECEKLER', 'Türk Kahvesi', 75),
-    ('SOĞUK & SICAK İÇECEKLER', 'Nescafe', 90),
-    ('BİRALAR (50cl)', 'Efes Pilsen', 220),
-    ('BİRALAR (50cl)', 'Tuborg Gold', 220),
-    ('BİRALAR (50cl)', 'Carlsberg', 220),
-    ('BİRALAR (50cl)', 'Bomonti', 230),
-    ('BİRALAR (50cl)', 'Miller', 250),
-    ('BİRALAR (50cl)', 'Tuborg Extra', 240),
-    ('ŞARAPLAR 37.5cl', 'Buzbağ (Öküzgözü-Boğazkere)', 800),
-    ('ŞARAPLAR 75cl', 'Buzbağ', 1300),
-    ('ŞARAPLAR 75cl', 'Terra Roze Kalecik', 1350),
-    ('VOTKA', 'İstanblue 20cl', 750),
-    ('VOTKA', 'İstanblue 35cl', 1200),
-    ('VOTKA', 'İstanblue 50cl', 1600),
-    ('VOTKA', 'İstanblue 70cl', 2000),
-    ('VİSKİ', 'Chivas Regal 12 Years Old 35cl', 2200),
-    ('VİSKİ', 'Chivas Regal 12 Years Old 50cl', 3000),
-    ('VİSKİ', 'Chivas Regal 12 Years Old 70cl', 3900),
-    ('RAKILAR', 'Yeni Rakı 20cl', 850),
-    ('RAKILAR', 'Yeni Rakı 35cl', 1250),
-    ('RAKILAR', 'Yeni Rakı 50cl', 1750),
-    ('RAKILAR', 'Yeni Rakı 70cl', 2250),
-    ('RAKILAR', 'Yeni Rakı 100cl', 2900),
-    ('RAKILAR', 'Efe Gold 20cl', 1050),
-    ('RAKILAR', 'Efe Gold 35cl', 1600),
-    ('RAKILAR', 'Efe Gold 50cl', 2250),
-    ('RAKILAR', 'Efe Gold 70cl', 2800),
-    ('RAKILAR', 'Efe Gold 100cl', 3600),
-    ('RAKILAR', 'Tekirdağ Altın 20cl', 1050),
-    ('RAKILAR', 'Tekirdağ Altın 35cl', 1600),
-    ('RAKILAR', 'Tekirdağ Altın 50cl', 2250),
-    ('RAKILAR', 'Tekirdağ Altın 70cl', 2800),
-    ('RAKILAR', 'Tekirdağ Altın 100cl', 3600),
-    ('RAKILAR', 'Tekirdağ Yaş Üzüm 35cl', 1400),
-    ('RAKILAR', 'Tekirdağ Yaş Üzüm 50cl', 2000),
-    ('RAKILAR', 'Tekirdağ Yaş Üzüm 70cl', 2500),
-    ('RAKILAR', 'Beylerbeyi Göbek 20cl', 1200),
-    ('RAKILAR', 'Beylerbeyi Göbek 35cl', 2000),
-    ('RAKILAR', 'Beylerbeyi Göbek 50cl', 2750),
-    ('RAKILAR', 'Beylerbeyi Göbek 70cl', 3600)
-) AS data
-INNER JOIN Categories categories
-    ON categories.Name = data.column1
-ON CONFLICT(CategoryId, Name) DO UPDATE SET
-    Price = excluded.Price,
-    IsActive = 1,
-    UpdatedAt = CURRENT_TIMESTAMP;
-
-UPDATE Users
-SET FullName = CASE Username
-    WHEN 'cashier1' THEN 'Ana Kasa'
-    WHEN 'waiter1' THEN 'Salon Garsonu'
-    WHEN 'admin' THEN 'Sistem Yoneticisi'
-    ELSE FullName
-END,
-UpdatedAt = CURRENT_TIMESTAMP
-WHERE Username IN ('cashier1', 'waiter1', 'admin');
 ";
 
+            // Seed only a new database. Reopening or upgrading must not overwrite the customer's menu.
+            if (existingDatabase)
+            {
+                command.CommandText = command.CommandText[..command.CommandText.IndexOf("INSERT OR IGNORE INTO Roles", StringComparison.Ordinal)];
+            }
             command.ExecuteNonQuery();
+            StockMigration.Apply(connection, transaction);
+            MenuCatalogMigration.Apply(connection, transaction);
+            NotificationMigration.Apply(connection, transaction);
+            transaction.Commit();
         }
     }
 }

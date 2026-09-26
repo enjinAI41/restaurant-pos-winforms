@@ -14,17 +14,19 @@ namespace Rivada.Restaurant.Services
         private readonly ProductRepository _productRepository;
         private readonly BillItemRepository _billItemRepository;
         private readonly BillRepository _billRepository;
+        private readonly StockRepository _stockRepository;
 
         public OrderService(
             CategoryRepository categoryRepository,
             ProductRepository productRepository,
             BillItemRepository billItemRepository,
-            BillRepository billRepository)
+            BillRepository billRepository, StockRepository stockRepository)
         {
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
             _billItemRepository = billItemRepository ?? throw new ArgumentNullException(nameof(billItemRepository));
             _billRepository = billRepository ?? throw new ArgumentNullException(nameof(billRepository));
+            _stockRepository = stockRepository;
         }
 
         public List<Category> GetCategories()
@@ -39,7 +41,17 @@ namespace Rivada.Restaurant.Services
                 throw new InvalidOperationException("Geçerli bir kategori bulunamadı.");
             }
 
-            return _productRepository.GetProductsByCategory(categoryId);
+            var products = _productRepository.GetProductsByCategory(categoryId);
+            var stocks = _stockRepository.GetStock().ToDictionary(x => x.ProductId);
+            foreach (var product in products)
+            {
+                if (stocks.TryGetValue(product.Id, out var stock))
+                {
+                    product.IsStockTracked = stock.IsTracked;
+                    product.AvailableStock = stock.Available;
+                }
+            }
+            return products;
         }
 
         public BillDetails GetBillDetails(int billId)
@@ -85,7 +97,7 @@ namespace Rivada.Restaurant.Services
 
             if (existingItem != null)
             {
-                if (!_billItemRepository.UpdateBillItemQuantity(existingItem.Id, existingItem.Quantity + 1))
+                if (!_billItemRepository.AdjustBillItemQuantity(existingItem.Id, 1))
                 {
                     throw new InvalidOperationException("Mevcut hesap kalemi adedi guncellenemedi.");
                 }
@@ -114,7 +126,7 @@ namespace Rivada.Restaurant.Services
 
             var item = GetBillItemOrThrow(billItemId);
             EnsureOpenBillOrThrow(item.BillId);
-            if (!_billItemRepository.UpdateBillItemQuantity(billItemId, item.Quantity + 1))
+            if (!_billItemRepository.AdjustBillItemQuantity(billItemId, 1))
             {
                 throw new InvalidOperationException("Hesap kalemi adedi artirilamadi.");
             }
@@ -130,17 +142,7 @@ namespace Rivada.Restaurant.Services
             var item = GetBillItemOrThrow(billItemId);
             EnsureOpenBillOrThrow(item.BillId);
 
-            if (item.Quantity <= 1)
-            {
-                if (!_billItemRepository.RemoveBillItem(billItemId))
-                {
-                    throw new InvalidOperationException("Hesap kalemi silinemedi.");
-                }
-
-                return;
-            }
-
-            if (!_billItemRepository.UpdateBillItemQuantity(billItemId, item.Quantity - 1))
+            if (!_billItemRepository.AdjustBillItemQuantity(billItemId, -1))
             {
                 throw new InvalidOperationException("Hesap kalemi adedi azaltilamadi.");
             }

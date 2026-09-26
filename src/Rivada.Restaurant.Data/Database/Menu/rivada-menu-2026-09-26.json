@@ -1,0 +1,523 @@
+{
+  "Source": "https://rivadaotel.com/menu",
+  "RetrievedDate": "2026-09-26",
+  "Currency": "TRY",
+  "Items": [
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Lokum",
+      "Price": 1200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/lokum"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Rivada Güveç",
+      "Price": 980.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/rivada-guvec"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Kuzu Pirzola",
+      "Price": 1220.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/kuzu-pirzola"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Antrikot",
+      "Price": 950.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/antrikot"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Sac Kavurma",
+      "Price": 980.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/sac-kavurma"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Köfte Izgara",
+      "Price": 650.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/kofte-izgara"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Bonfile",
+      "Price": 1100.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/bonfile"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Karışık Izgara",
+      "Price": 1320.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/karisik-izgara"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Tavuk Sac Kavurma",
+      "Price": 500.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/tavuk-sac-kavurma"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Tavuk Izgara",
+      "Price": 550.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/tavuk-izgara"
+    },
+    {
+      "Category": "ANA YEMEKLER",
+      "Name": "Tavuk Şiş",
+      "Price": 550.0,
+      "SourceUrl": "https://rivadaotel.com/menu/ana-yemekler/tavuk-sis"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Beyaz Peynir",
+      "Price": 200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/beyaz-peynir"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Haydari",
+      "Price": 220.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/haydari"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Acılı Meze",
+      "Price": 220.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/acili-meze"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Bombai Pilaki",
+      "Price": 250.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/bombai-pilaki"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Atom",
+      "Price": 220.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/atom"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Şakşuka",
+      "Price": 230.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/saksuka"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Patlıcan Ezme",
+      "Price": 230.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/patlican-ezme"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Girit Ezme",
+      "Price": 300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/girit-ezme"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Havuç Tarator",
+      "Price": 220.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/havuc-tarator"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Kuru Cacık",
+      "Price": 220.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/kuru-cacik"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Ege Rüyası",
+      "Price": 250.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/ege-ruyasi"
+    },
+    {
+      "Category": "MEZELER",
+      "Name": "Kalamata Zeytin",
+      "Price": 200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/mezeler/kalamata-zeytin"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Kavun",
+      "Price": 200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/kavun"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Karpuz",
+      "Price": 200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/karpuz"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Kaşarlı Mantar",
+      "Price": 400.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/kasarli-mantar"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Güveçte Sucuk",
+      "Price": 400.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/guvecte-sucuk"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Yaprak Ciğer",
+      "Price": 600.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/yaprak-ciger"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Paçanga Böreği",
+      "Price": 400.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/pacanga-boregi"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Söğüş",
+      "Price": 200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/sogus"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Patates Tava",
+      "Price": 400.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/patates-tava"
+    },
+    {
+      "Category": "BAŞLANGIÇLAR",
+      "Name": "Tereyağlı Karides",
+      "Price": 600.0,
+      "SourceUrl": "https://rivadaotel.com/menu/baslangiclar/tereyagli-karides"
+    },
+    {
+      "Category": "SALATALAR",
+      "Name": "Kaşık Salata",
+      "Price": 650.0,
+      "SourceUrl": "https://rivadaotel.com/menu/salatalar/kasik-salata"
+    },
+    {
+      "Category": "SALATALAR",
+      "Name": "Çoban Salata",
+      "Price": 600.0,
+      "SourceUrl": "https://rivadaotel.com/menu/salatalar/coban-salata"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Cola",
+      "Price": 120.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/cola"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Ice Tea",
+      "Price": 120.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/ice-tea"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Fanta",
+      "Price": 120.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/fanta"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Soda",
+      "Price": 80.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/soda"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Şalgam",
+      "Price": 100.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/salgam"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Su (500 ml)",
+      "Price": 50.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/su-500"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Su (1,5 lt)",
+      "Price": 75.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/su-1500"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Red Bull",
+      "Price": 180.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/red-bull"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Demleme Çay",
+      "Price": 50.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/demleme-cay"
+    },
+    {
+      "Category": "İÇECEKLER",
+      "Name": "Türk Kahvesi",
+      "Price": 150.0,
+      "SourceUrl": "https://rivadaotel.com/menu/icecekler/turk-kahvesi"
+    },
+    {
+      "Category": "MEYVE",
+      "Name": "Ballı Muz",
+      "Price": 300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/meyve/balli-muz"
+    },
+    {
+      "Category": "MEYVE",
+      "Name": "Meyve Tabağı",
+      "Price": 500.0,
+      "SourceUrl": "https://rivadaotel.com/menu/meyve/meyve-tabagi"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Yeni Rakı 20cl",
+      "Price": 1100.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/yeni-raki"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Yeni Rakı 35cl",
+      "Price": 1500.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/yeni-raki"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Yeni Rakı 50cl",
+      "Price": 2000.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/yeni-raki"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Yeni Rakı 70cl",
+      "Price": 2500.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/yeni-raki"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Yeni Rakı 100cl",
+      "Price": 3300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/yeni-raki"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Efe Gold 20cl",
+      "Price": 1250.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/efe-gold"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Efe Gold 35cl",
+      "Price": 1800.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/efe-gold"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Efe Gold 50cl",
+      "Price": 2700.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/efe-gold"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Efe Gold 70cl",
+      "Price": 3300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/efe-gold"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Efe Gold 100cl",
+      "Price": 4000.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/efe-gold"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Altın 20cl",
+      "Price": 1350.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-altin"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Altın 35cl",
+      "Price": 2000.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-altin"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Altın 50cl",
+      "Price": 2750.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-altin"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Altın 70cl",
+      "Price": 3300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-altin"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Altın 100cl",
+      "Price": 4100.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-altin"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Yaş Üzüm 35cl",
+      "Price": 1600.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-yas-uzum"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Yaş Üzüm 50cl",
+      "Price": 2200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-yas-uzum"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Tekirdağ Yaş Üzüm 70cl",
+      "Price": 2700.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tekirdag-yas-uzum"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Beylerbeyi Göbek 20cl",
+      "Price": 1500.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/beylerbeyi-gobek"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Beylerbeyi Göbek 35cl",
+      "Price": 2200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/beylerbeyi-gobek"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Beylerbeyi Göbek 50cl",
+      "Price": 3000.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/beylerbeyi-gobek"
+    },
+    {
+      "Category": "RAKI",
+      "Name": "Beylerbeyi Göbek 70cl",
+      "Price": 3700.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/beylerbeyi-gobek"
+    },
+    {
+      "Category": "VİSKİ",
+      "Name": "Chivas Regal 12 Years Old 35cl",
+      "Price": 2400.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/chivas-regal-12"
+    },
+    {
+      "Category": "VİSKİ",
+      "Name": "Chivas Regal 12 Years Old 50cl",
+      "Price": 3300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/chivas-regal-12"
+    },
+    {
+      "Category": "VİSKİ",
+      "Name": "Chivas Regal 12 Years Old 70cl",
+      "Price": 4200.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/chivas-regal-12"
+    },
+    {
+      "Category": "VİSKİ",
+      "Name": "Red Label 20cl",
+      "Price": 1500.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/red-label-20cl"
+    },
+    {
+      "Category": "VOTKA",
+      "Name": "İstanblue 20cl",
+      "Price": 1000.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/istanblue"
+    },
+    {
+      "Category": "VOTKA",
+      "Name": "İstanblue 35cl",
+      "Price": 1300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/istanblue"
+    },
+    {
+      "Category": "VOTKA",
+      "Name": "İstanblue 50cl",
+      "Price": 1750.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/istanblue"
+    },
+    {
+      "Category": "VOTKA",
+      "Name": "İstanblue 70cl",
+      "Price": 2300.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/istanblue"
+    },
+    {
+      "Category": "ŞARAP",
+      "Name": "Beyaz / Kırmızı / Roze Şarap 75cl",
+      "Price": 1600.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/sarap"
+    },
+    {
+      "Category": "BİRA",
+      "Name": "Efes Pilsen",
+      "Price": 240.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/efes-pilsen"
+    },
+    {
+      "Category": "BİRA",
+      "Name": "Tuborg Gold",
+      "Price": 240.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tuborg-gold"
+    },
+    {
+      "Category": "BİRA",
+      "Name": "Carlsberg",
+      "Price": 250.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/carlsberg"
+    },
+    {
+      "Category": "BİRA",
+      "Name": "Tuborg Extra",
+      "Price": 270.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tuborg-extra"
+    },
+    {
+      "Category": "ÇEREZLER",
+      "Name": "Tuzlu Fıstık",
+      "Price": 150.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/tuzlu-fistik"
+    },
+    {
+      "Category": "ÇEREZLER",
+      "Name": "Badem",
+      "Price": 250.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/badem"
+    },
+    {
+      "Category": "ÇEREZLER",
+      "Name": "Antep Fıstığı",
+      "Price": 350.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/antep-fistigi"
+    },
+    {
+      "Category": "ÇEREZLER",
+      "Name": "Lüks Kokteyl",
+      "Price": 280.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/luks-kokteyl"
+    },
+    {
+      "Category": "ÇEREZLER",
+      "Name": "Çikolata",
+      "Price": 150.0,
+      "SourceUrl": "https://rivadaotel.com/menu/alkollu-icecekler/cikolata"
+    }
+  ]
+}

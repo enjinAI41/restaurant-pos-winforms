@@ -14,6 +14,7 @@ namespace Rivada.Restaurant.WinForms.Forms
         private Label lblRole = null!;
         private FlowLayoutPanel flpTables = null!;
         private Button btnProducts = null!;
+        private Button btnStock = null!;
         private Button btnPayment = null!;
         private Button btnRefresh = null!;
         private Button btnLogout = null!;
@@ -35,6 +36,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.lblWelcome = new Label();
             this.lblRole = new Label();
             this.btnProducts = new Button();
+            this.btnStock = new Button();
             this.btnPayment = new Button();
             this.btnRefresh = new Button();
             this.btnLogout = new Button();
@@ -72,7 +74,11 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.btnProducts.Size = new Size(128, 38);
             this.btnProducts.Click += new EventHandler(this.btnProducts_Click);
 
-            ConfigureTopButton(this.btnPayment, "Kasa / Odeme", 835);
+            ConfigureTopButton(this.btnStock, "Stok Takibi", 462);
+            this.btnStock.Size = new Size(128, 38);
+            this.btnStock.Click += new EventHandler(this.btnStock_Click);
+
+            ConfigureTopButton(this.btnPayment, "Ciro Takibi", 835);
             this.btnPayment.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.btnPayment.Click += new EventHandler(this.btnPayment_Click);
 
@@ -93,6 +99,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             this.pnlTopBar.Controls.Add(this.lblWelcome);
             this.pnlTopBar.Controls.Add(this.lblRole);
             this.pnlTopBar.Controls.Add(this.btnProducts);
+            this.pnlTopBar.Controls.Add(this.btnStock);
             this.pnlTopBar.Controls.Add(this.btnPayment);
             this.pnlTopBar.Controls.Add(this.btnRefresh);
             this.pnlTopBar.Controls.Add(this.btnLogout);

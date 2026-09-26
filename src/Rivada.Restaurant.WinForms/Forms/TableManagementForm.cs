@@ -17,6 +17,9 @@ namespace Rivada.Restaurant.WinForms.Forms
         private readonly IOrderService _orderService;
         private readonly IPaymentService _paymentService;
         private readonly IProductManagementService _productManagementService;
+        private readonly IStockService _stockService;
+        private readonly NotificationBar _notificationBar;
+        private readonly IRevenueService _revenueService;
         private bool _isOpeningTable;
         private bool _isResettingTable;
 
@@ -25,15 +28,23 @@ namespace Rivada.Restaurant.WinForms.Forms
             ITableManagementService tableManagementService,
             IOrderService orderService,
             IPaymentService paymentService,
-            IProductManagementService productManagementService)
+            IProductManagementService productManagementService,
+            IStockService stockService,
+            INotificationService notificationService,
+            IRevenueService revenueService)
         {
             _loggedInUser = loggedInUser ?? throw new ArgumentNullException(nameof(loggedInUser));
             _tableManagementService = tableManagementService ?? throw new ArgumentNullException(nameof(tableManagementService));
             _orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
             _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
             _productManagementService = productManagementService ?? throw new ArgumentNullException(nameof(productManagementService));
+            _stockService = stockService;
+            _revenueService = revenueService ?? throw new ArgumentNullException(nameof(revenueService));
 
             InitializeComponent();
+            _notificationBar = new NotificationBar(notificationService ?? throw new ArgumentNullException(nameof(notificationService)));
+            Controls.Add(_notificationBar);
+            Controls.SetChildIndex(_notificationBar, 1);
             ConfigureVisualStyle();
             SetUserHeader();
             ConfigureMenuAccess();
@@ -62,6 +73,15 @@ namespace Rivada.Restaurant.WinForms.Forms
         private void ConfigureMenuAccess()
         {
             btnProducts.Visible = IsAdminUser();
+            btnStock.Visible = IsAdminUser();
+            btnPayment.Visible = IsAdminUser();
+        }
+
+        private async void btnStock_Click(object? sender, EventArgs e)
+        {
+            if (!IsAdminUser()) return;
+            StockManagementForm.ShowForUser(_loggedInUser, _stockService, this);
+            await _notificationBar.RefreshAsync();
         }
 
         private bool IsAdminUser()
@@ -73,6 +93,17 @@ namespace Rivada.Restaurant.WinForms.Forms
         {
             flpTables.FlowDirection = FlowDirection.LeftToRight;
             flpTables.AutoScroll = true;
+            // Keep all navigation buttons reachable at the minimum window width.
+            var actions=new FlowLayoutPanel { Dock=DockStyle.Right,AutoSize=true,AutoSizeMode=AutoSizeMode.GrowAndShrink,
+                FlowDirection=FlowDirection.LeftToRight,WrapContents=false };
+            foreach(var button in new[] {btnProducts,btnStock,btnPayment,btnRefresh,btnLogout})
+            {
+                button.Anchor=AnchorStyles.Top|AnchorStyles.Left;
+                button.Margin=new Padding(4,10,0,0);
+                actions.Controls.Add(button);
+            }
+            pnlTopBar.Controls.Add(actions);
+            lblWelcome.AutoSize=false; lblWelcome.AutoEllipsis=true; lblWelcome.Size=new Size(285,32);
         }
 
         private async Task LoadAndRenderTablesAsync()
@@ -96,6 +127,7 @@ namespace Rivada.Restaurant.WinForms.Forms
             finally
             {
                 UseWaitCursor = false;
+                await _notificationBar.RefreshAsync();
             }
         }
 
@@ -379,11 +411,9 @@ namespace Rivada.Restaurant.WinForms.Forms
 
         private async void btnPayment_Click(object? sender, EventArgs e)
         {
-            MessageBox.Show(
-                "Belirli bir hesabi odemek icin masa siparis ekranindan odeme acin.",
-                "Hesap Sec",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            if(!IsAdminUser()) return;
+            using var form=new RevenueForm(_loggedInUser,_revenueService);
+            form.ShowDialog(this);
             await LoadAndRenderTablesAsync();
         }
 

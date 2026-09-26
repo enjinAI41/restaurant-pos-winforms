@@ -14,6 +14,9 @@ namespace Rivada.Restaurant.WinForms.Forms
         private IOrderService? _orderService;
         private IPaymentService? _paymentService;
         private IProductManagementService? _productManagementService;
+        private IStockService? _stockService;
+        private INotificationService? _notificationService;
+        private IRevenueService? _revenueService;
 
         public LoginForm()
         {
@@ -31,7 +34,10 @@ namespace Rivada.Restaurant.WinForms.Forms
             ITableManagementService tableManagementService,
             IOrderService orderService,
             IPaymentService paymentService,
-            IProductManagementService productManagementService)
+            IProductManagementService productManagementService,
+            IStockService stockService,
+            INotificationService notificationService,
+            IRevenueService revenueService)
             : this()
         {
             _authService = authService;
@@ -39,6 +45,9 @@ namespace Rivada.Restaurant.WinForms.Forms
             _orderService = orderService;
             _paymentService = paymentService;
             _productManagementService = productManagementService;
+            _stockService = stockService;
+            _notificationService = notificationService;
+            _revenueService = revenueService;
         }
 
         private void TryInitializeRuntimeServices()
@@ -47,7 +56,7 @@ namespace Rivada.Restaurant.WinForms.Forms
                 _tableManagementService != null &&
                 _orderService != null &&
                 _paymentService != null &&
-                _productManagementService != null)
+                _productManagementService != null && _stockService != null && _notificationService != null && _revenueService != null)
             {
                 return;
             }
@@ -60,6 +69,9 @@ namespace Rivada.Restaurant.WinForms.Forms
                 _orderService = services.OrderService;
                 _paymentService = services.PaymentService;
                 _productManagementService = services.ProductManagementService;
+                _stockService = services.StockService;
+                _notificationService = services.NotificationService;
+                _revenueService = services.RevenueService;
             }
             catch (Exception ex)
             {
@@ -140,7 +152,7 @@ namespace Rivada.Restaurant.WinForms.Forms
 
         private void OpenTableManagementForm(User loggedInUser)
         {
-            if (_tableManagementService == null || _orderService == null || _paymentService == null || _productManagementService == null)
+            if (_tableManagementService == null || _orderService == null || _paymentService == null || _productManagementService == null || _stockService == null || _notificationService == null || _revenueService == null)
             {
                 MessageBox.Show(
                     "Uygulama servisleri hazir degil. Lutfen uygulamayi yeniden baslatin.",
@@ -157,7 +169,10 @@ namespace Rivada.Restaurant.WinForms.Forms
                     _tableManagementService,
                     _orderService,
                     _paymentService,
-                    _productManagementService);
+                    _productManagementService,
+                    _stockService,
+                    _notificationService,
+                    _revenueService);
                 tableManagementForm.FormClosed += (_, __) => Close();
                 Hide();
                 tableManagementForm.Show();

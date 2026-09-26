@@ -33,6 +33,8 @@ namespace Rivada.Restaurant.Data.Repositories
 
             try
             {
+                EnsureOpen(connection, transaction, item.BillId);
+                StockRepository.EnsureAvailable(connection, transaction, item.ProductId, item.Quantity);
                 using var insertCommand = connection.CreateCommand();
                 insertCommand.Transaction = transaction;
                 insertCommand.CommandText = @"
@@ -138,8 +140,14 @@ LIMIT 1;";
         }
 
         public bool UpdateBillItemQuantity(int billItemId, int quantity)
+            => ChangeQuantity(billItemId, quantity, false);
+
+        public bool AdjustBillItemQuantity(int billItemId, int delta)
+            => ChangeQuantity(billItemId, delta, true);
+
+        private bool ChangeQuantity(int billItemId, int value, bool relative)
         {
-            if (billItemId <= 0 || quantity <= 0)
+            if (billItemId <= 0)
             {
                 return false;
             }
@@ -150,13 +158,25 @@ LIMIT 1;";
 
             try
             {
-                var billId = GetBillIdByBillItemId(connection, transaction, billItemId);
-                if (billId == null)
+                var item = GetBillItemByIdInternal(connection, transaction, billItemId);
+                if (item == null)
                 {
                     transaction.Rollback();
                     return false;
                 }
 
+                EnsureOpen(connection, transaction, item.BillId);
+                var quantity = relative ? checked(item.Quantity + value) : value;
+                if (quantity < 0) throw new InvalidOperationException("Geçersiz adet.");
+                if (quantity == 0)
+                {
+                    using var delete = StockRepository.Command(connection, transaction, "DELETE FROM BillItems WHERE Id=@id;", ("@id", billItemId));
+                    delete.ExecuteNonQuery();
+                    UpdateBillTotalInternal(connection, transaction, item.BillId);
+                    transaction.Commit();
+                    return true;
+                }
+                if (quantity > item.Quantity) StockRepository.EnsureAvailable(connection, transaction, item.ProductId, quantity - item.Quantity);
                 using var updateCommand = connection.CreateCommand();
                 updateCommand.Transaction = transaction;
                 updateCommand.CommandText = @"
@@ -175,7 +195,7 @@ WHERE Id = @Id;";
                     return false;
                 }
 
-                UpdateBillTotalInternal(connection, transaction, billId.Value);
+                UpdateBillTotalInternal(connection, transaction, item.BillId);
                 transaction.Commit();
                 return true;
             }
@@ -202,6 +222,7 @@ WHERE Id = @Id;";
                 }
 
                 using var deleteCommand = connection.CreateCommand();
+                EnsureOpen(connection, transaction, billId.Value);
                 deleteCommand.Transaction = transaction;
                 deleteCommand.CommandText = "DELETE FROM BillItems WHERE Id = @Id;";
                 AddParameter(deleteCommand, "@Id", billItemId);
@@ -230,7 +251,7 @@ WHERE Id = @Id;";
 UPDATE BillItems
 SET Note = @Note,
     UpdatedAt = CURRENT_TIMESTAMP
-WHERE Id = @Id;";
+WHERE Id = @Id AND EXISTS (SELECT 1 FROM Bills WHERE Id=BillItems.BillId AND Status=0);";
 
             using var connection = _databaseHelper.CreateConnection();
             connection.Open();
@@ -263,12 +284,13 @@ WHERE Id = @Id;";
                     return false;
                 }
 
-                if (source.BillId != target.BillId)
+                if (source.BillId != target.BillId || source.ProductId != target.ProductId || source.UnitPrice != target.UnitPrice)
                 {
                     transaction.Rollback();
                     return false;
                 }
 
+                EnsureOpen(connection, transaction, source.BillId);
                 using var updateTarget = connection.CreateCommand();
                 updateTarget.Transaction = transaction;
                 updateTarget.CommandText = @"
@@ -277,7 +299,7 @@ SET Quantity = @Quantity,
     LineTotal = UnitPrice * @Quantity,
     UpdatedAt = CURRENT_TIMESTAMP
 WHERE Id = @Id;";
-                AddParameter(updateTarget, "@Quantity", target.Quantity + source.Quantity);
+                AddParameter(updateTarget, "@Quantity", checked(target.Quantity + source.Quantity));
                 AddParameter(updateTarget, "@Id", targetBillItemId);
                 if (updateTarget.ExecuteNonQuery() == 0)
                 {
@@ -340,6 +362,13 @@ ORDER BY Id;";
             }
 
             return items;
+        }
+
+        private static void EnsureOpen(SqliteConnection connection, SqliteTransaction transaction, int billId)
+        {
+            using var command = StockRepository.Command(connection, transaction,
+                "SELECT COUNT(*) FROM Bills WHERE Id=@id AND Status=0;", ("@id", billId));
+            if (Convert.ToInt32(command.ExecuteScalar()) != 1) throw new InvalidOperationException("Aktif adisyon bulunamadı.");
         }
 
         private static int? GetBillIdByBillItemId(SqliteConnection connection, SqliteTransaction transaction, int billItemId)

@@ -1,8 +1,16 @@
-﻿; Inno Setup Script
+; Inno Setup Script
 ; Build from repo root with installer\build-installer.ps1
 
 #define MyAppName "Rivada Restaurant POS"
-#define MyAppVersion "1.0.0"
+#ifndef MyAppVersion
+#define MyAppVersion "1.6.0"
+#endif
+#ifndef PublishDir
+#define PublishDir "publish\app"
+#endif
+#ifndef SetupOutputDir
+#define SetupOutputDir "output"
+#endif
 #define MyAppPublisher "Rivada"
 #define MyAppExeName "Rivada.Restaurant.WinForms.exe"
 
@@ -14,8 +22,8 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={localappdata}\Rivada Restaurant POS
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=output
-OutputBaseFilename=RivadaRestaurantPOS-Setup
+OutputDir={#SetupOutputDir}
+OutputBaseFilename=RivadaRestaurantPOS-{#MyAppVersion}-Setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -29,7 +37,7 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "desktopicon"; Description: "Masaüstü kısayolu oluştur"; GroupDescription: "Ek görevler:"; Flags: unchecked
 
 [Files]
-Source: "publish\app\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#PublishDir}\*"; DestDir: "{app}"; Excludes: "*.db,*.db-wal,*.db-shm,license*.json,license*.xml,logs\*,backups\*,*.pdb"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

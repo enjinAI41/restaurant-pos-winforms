@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
@@ -9,10 +9,12 @@
     <StartupObject>Rivada.Restaurant.WinForms.Program</StartupObject>
     <RootNamespace>Rivada.Restaurant</RootNamespace>
     <AssemblyName>Rivada.Restaurant.WinForms</AssemblyName>
+    <Version>1.6.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="src\**\*.cs" />
+    <EmbeddedResource Include="src\Rivada.Restaurant.Data\Database\Menu\rivada-menu-2026-09-26.json" LogicalName="Rivada.Menu.2026-09-26.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -201,7 +201,7 @@ namespace Rivada.Restaurant.Services
             }
             catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
             {
-                throw new InvalidOperationException("Ürün geçmiş siparişlerde kullanıldığı için silinemez. Pasife almayı deneyin.", ex);
+                throw new InvalidOperationException("Ürünün sipariş veya stok geçmişi bulunduğu için silinemez. Pasife almayı deneyin.", ex);
             }
         }
 
